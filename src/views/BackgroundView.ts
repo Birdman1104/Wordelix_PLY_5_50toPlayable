@@ -26,7 +26,7 @@ export class BackgroundView extends PixiGrid {
     private onStatusUpdate(status: AdStatus): void {
         switch (status) {
             case AdStatus.Game:
-                // this.buildBkg('bkg');
+                this.buildBkg('game/bkg');
                 break;
             default:
         }
