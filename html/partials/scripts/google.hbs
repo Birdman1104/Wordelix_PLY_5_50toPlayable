@@ -1,0 +1,15 @@
+<script>
+	const store = navigator.userAgent.toLowerCase().indexOf("android") > -1 ? "google" : "apple";
+	var clickTag = "https://play.google.com/store/apps/details?id=com.hitapps.figgerits";
+	var clickTag2 = store === "google" ?
+			"https://play.google.com/store/apps/details?id=com.hitapps.figgerits" :
+			"https://apps.apple.com/us/app/figgerits-word-puzzle-games/id1600880375";
+			window.gameStart_ = true;
+			window.onload = () => {
+				window.createGame();
+			}
+			window.installCTA = () => {
+				window.open(clickTag2);
+			}
+			window.gameReadyCall = () => { }
+</script>

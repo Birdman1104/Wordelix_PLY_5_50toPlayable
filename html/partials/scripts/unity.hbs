@@ -1,0 +1,30 @@
+<script>
+		if (mraid.getState() === 'loading') {
+			mraid.addEventListener('ready', onSdkReady);
+		} else {
+			onSdkReady();
+		}
+		function viewableChangeHandler(viewable) {
+			if(viewable) {
+				window.soundMute(false);
+			} else {
+				window.soundMute(true);
+			}
+		}
+		function onSdkReady() {
+			mraid.addEventListener('viewableChange', viewableChangeHandler);
+			if (mraid.isViewable()) {
+			}
+		}
+		window.onload=function(){window.createGame();}
+		window.installCTA = () => {
+			const store = navigator.userAgent.toLowerCase().indexOf("android") > -1 ? "google" : "apple";
+			switch (store) {
+				case "google":mraid.open("https://play.google.com/store/apps/details?id=com.hitapps.figgerits"); break;
+				case "apple":mraid.open("https://apps.apple.com/us/app/figgerits-word-puzzle-games/id1600880375");
+			}		
+		}
+		window.gameReadyCall=()=>{
+
+		}		
+</script>

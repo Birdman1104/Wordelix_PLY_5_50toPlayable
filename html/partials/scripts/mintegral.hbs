@@ -1,0 +1,16 @@
+<script>
+		window.gameStart_ = false;
+		window.gameStart=function(){window.gameStart_ = true;}
+		window.gameClose=function(){}
+		window.gameEnd=function(){}
+		window.installCTA=function(){
+			window.install&&window.install();
+			window.gameEnd&&window.gameEnd();
+		}
+		window.gameReadyCall=function(){
+			window.gameReady&&window.gameReady();
+		}
+		window.onload=function(){
+			window.createGame();
+		}		
+</script>
