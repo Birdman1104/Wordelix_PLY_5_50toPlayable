@@ -28,7 +28,13 @@ type SpriteConfig = {
     position?: PIXI.Point;
 };
 
-type CardConfig = {
-    question: string;
-    answers: string[];
+type LevelConfig = {
+    level: number;
+    title: string;
+    words: WordConfig[];
+};
+
+type WordConfig = {
+    mess: string;
+    answer: string;
 };
