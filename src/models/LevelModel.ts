@@ -1,0 +1,48 @@
+import { ObservableModel } from './ObservableModel';
+import { WordModel } from './WordModel';
+
+export class LevelModel extends ObservableModel {
+    private _level: number;
+    private _title: string;
+    private _words: WordModel[] = [];
+
+    constructor(private config: LevelConfig) {
+        super('LevelModel');
+
+        this.makeObservable();
+    }
+
+    public get level(): number {
+        return this._level;
+    }
+
+    public set level(value: number) {
+        this._level = value;
+    }
+
+    public set title(value: string) {
+        this._title = value;
+    }
+
+    public get title(): string {
+        return this._title;
+    }
+
+    public get words(): WordModel[] {
+        return this._words;
+    }
+
+    public set words(value: WordModel[]) {
+        this._words = value;
+    }
+
+    public initialize(): void {
+        this.level = this.config.level;
+        this.title = this.config.title;
+        this.words = this.config.words.map((wc: WordConfig) => {
+            const wordModel = new WordModel(wc)
+            wordModel.initialize();
+            return wordModel;
+        });
+    }
+}
