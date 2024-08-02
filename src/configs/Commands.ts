@@ -28,8 +28,6 @@ const initializeCtaModelCommand = (): void => Head.ad?.initializeCtaModel();
 const initializeSoundModelCommand = (): void => Head.ad?.initializeSoundModel();
 const initializeHintModelCommand = (): void => Head.ad?.initializeHintModel();
 
-const startIdleTimerCommand = (): void => Head.ad?.startIdleTimer();
-const stopIdleTimerCommand = (): void => Head.ad?.stopIdleTimer();
 
 const setHintStateCommand = (state: HintState): void => Head.ad?.hint?.setState(state);
 const startHintVisibilityTimerCommand = (time?: number): void => Head.ad?.hint?.startVisibilityTimer(time);
@@ -47,8 +45,6 @@ const initializeModelsCommand = (): void => {
 
         .guard(hintParamGuard)
         .execute(initializeHintModelCommand)
-
-        .execute(startIdleTimerCommand)
 
         .guard(hintParamGuard)
         .execute(startHintVisibilityTimerCommand);
