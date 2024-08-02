@@ -1,7 +1,5 @@
 import { lego } from '@armathai/lego';
 import { ICellConfig, PixiGrid } from '@armathai/pixi-grid';
-import { Graphics } from 'pixi.js';
-import { CARD_HEIGHT, CARD_WIDTH, GENERATED_TEXTURES, INPUT_HEIGHT, INPUT_WIDTH } from '../configs/constants';
 import { getGameViewGridConfig } from '../configs/gridConfigs/GameViewGC';
 import { GameModelEvents, HintModelEvents } from '../events/ModelEvents';
 import { BoardModel } from '../models/BoardModel';
@@ -33,35 +31,7 @@ export class GameView extends PixiGrid {
     }
 
     private build(): void {
-        const gr = new Graphics();
-        // gray card bkg
-        gr.lineStyle(3, 0x808080, 1);
-        gr.beginFill(0xffffff);
-        gr.drawRoundedRect(0, 0, CARD_WIDTH, CARD_HEIGHT, 10);
-        gr.endFill();
-        GENERATED_TEXTURES.cardBkgMain = window.game.renderer.generateTexture(gr);
-
-        gr.clear();
-
-        // blue card bkg
-        gr.lineStyle(3, 0x0237a1, 1);
-        gr.beginFill(0xffffff);
-        gr.drawRoundedRect(0, 0, CARD_WIDTH, CARD_HEIGHT, 10);
-        gr.endFill();
-
-        GENERATED_TEXTURES.cardBkgSelected = window.game.renderer.generateTexture(gr);
-
-        gr.clear();
-
-        // input area
-
-        gr.lineStyle(5, 0x000000, 1);
-        gr.beginFill(0xffffff);
-        gr.drawRoundedRect(0, 0, INPUT_WIDTH, INPUT_HEIGHT, 10);
-        gr.endFill();
-        GENERATED_TEXTURES.inputArea = window.game.renderer.generateTexture(gr);
-
-        gr.destroy();
+        //
     }
 
     private onHintStateUpdate(state: HintState): void {

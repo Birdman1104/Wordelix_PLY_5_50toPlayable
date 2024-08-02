@@ -5,18 +5,7 @@ export const AdModelEvents = {
     HintUpdate: 'AdModelHintUpdate',
 };
 
-export const BoardModelEvents = {
-    ActiveCardUpdate: 'BoardModelActiveCardUpdate',
-    CardsUpdate: 'BoardModelCardsUpdate',
-    TypedTextUpdate: 'BoardModelTypedTextUpdate',
-    IsGameOverUpdate: 'BoardModelIsGameOverUpdate',
-};
-
-export const CardModelEvents = {
-    AnswersRemainingUpdate: 'CardModelAnswersRemainingUpdate',
-    CompletedUpdate: 'CardModelCompletedUpdate',
-    InteractivityUpdate: 'CardModelInteractivityUpdate',
-};
+export const BoardModelEvents = { LevelUpdate: 'BoardModelLevelUpdate' };
 
 export const CtaModelEvents = { VisibleUpdate: 'CtaModelVisibleUpdate' };
 
@@ -30,4 +19,17 @@ export const HeadModelEvents = { GameModelUpdate: 'HeadModelGameModelUpdate', Ad
 
 export const HintModelEvents = { StateUpdate: 'HintModelStateUpdate', VisibleUpdate: 'HintModelVisibleUpdate' };
 
+export const LetterModelEvents = {
+    LetterUpdate: 'LetterModelLetterUpdate',
+    IsInRightSpotUpdate: 'LetterModelIsInRightSpotUpdate',
+};
+
+export const LevelModelEvents = {
+    LevelUpdate: 'LevelModelLevelUpdate',
+    TitleUpdate: 'LevelModelTitleUpdate',
+    WordsUpdate: 'LevelModelWordsUpdate',
+};
+
 export const SoundModelEvents = { StateUpdate: 'SoundModelStateUpdate' };
+
+export const WordModelEvents = { LettersUpdate: 'WordModelLettersUpdate' };

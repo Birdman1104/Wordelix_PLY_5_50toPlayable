@@ -1,27 +1,45 @@
 import { lego } from '@armathai/lego';
-import { Container } from 'pixi.js';
-import { GameModelEvents } from '../events/ModelEvents';
+import { Container, Rectangle } from 'pixi.js';
+import { BoardModelEvents, GameModelEvents } from '../events/ModelEvents';
 import { GameState } from '../models/GameModel';
+import { LevelModel } from '../models/LevelModel';
+import { drawBounds } from '../utils';
+import { WordView } from './WordView';
 
 export class BoardView extends Container {
+    private words: WordView[] = [];
+
     constructor() {
         super();
 
-        lego.event.on(GameModelEvents.StateUpdate, this.onGameStateUpdate, this);
+        lego.event
+            .on(GameModelEvents.StateUpdate, this.onGameStateUpdate, this)
+            .on(BoardModelEvents.LevelUpdate, this.onLevelUpdate, this);
 
         this.build();
+
+        drawBounds(this)
     }
 
     get viewName() {
         return 'BoardView';
     }
 
-    public rebuild(): void {
-        //
+    public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
+        return new Rectangle(-100, -100, 800, 600);
     }
 
     private build(): void {
         //
+    }
+
+    private onLevelUpdate(level: LevelModel): void {
+        this.words = level.words.map((word, i) => {
+            const wordView = new WordView(word);
+            wordView.y = i * 128;
+            this.addChild(wordView);
+            return wordView;
+        });
     }
 
     private onGameStateUpdate(state: GameState): void {

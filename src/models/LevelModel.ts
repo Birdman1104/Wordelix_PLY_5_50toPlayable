@@ -6,9 +6,15 @@ export class LevelModel extends ObservableModel {
     private _title: string;
     private _words: WordModel[] = [];
 
-    constructor(private config: LevelConfig) {
+    constructor(config: LevelConfig) {
         super('LevelModel');
-
+        this.level = config.level;
+        this.title = config.title;
+        this.words = config.words.map((wc: WordConfig) => {
+            const wordModel = new WordModel(wc)
+            wordModel.initialize();
+            return wordModel;
+        });
         this.makeObservable();
     }
 
@@ -37,12 +43,6 @@ export class LevelModel extends ObservableModel {
     }
 
     public initialize(): void {
-        this.level = this.config.level;
-        this.title = this.config.title;
-        this.words = this.config.words.map((wc: WordConfig) => {
-            const wordModel = new WordModel(wc)
-            wordModel.initialize();
-            return wordModel;
-        });
+        //
     }
 }
