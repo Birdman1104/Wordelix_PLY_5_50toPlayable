@@ -1,7 +1,7 @@
 import { Container, Sprite } from 'pixi.js';
 import { Images } from '../assets';
 import { LetterModel } from '../models/LetterModel';
-import { makeSprite } from '../utils';
+import { drawBounds, makeSprite } from '../utils';
 
 export class LetterView extends Container {
     private sprite: Sprite;
@@ -15,6 +15,10 @@ export class LetterView extends Container {
         return this.config.uuid;
     }
 
+    get letter(): string {
+        return this.config.letter;
+    }
+
     public setSolved(): void {
         this.sprite.tint = 0x00ff00;
     }
@@ -24,5 +28,7 @@ export class LetterView extends Container {
         this.sprite.interactive = true;
         this.sprite.tint = 0x000000;
         this.addChild(this.sprite);
+
+        drawBounds(this);
     }
 }

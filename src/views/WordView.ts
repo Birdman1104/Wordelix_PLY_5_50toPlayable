@@ -6,6 +6,7 @@ export class WordView extends Container {
     private letters: LetterView[] = [];
     private canDrag = true;
     private dragPoint: Point;
+    private dragStarted = false;
 
     private draggingLetter: LetterView | null;
 
@@ -14,13 +15,22 @@ export class WordView extends Container {
         this.build();
     }
 
-    get viewName() {
-        return 'WordView';
-    }
+    get uuid(): string {
+        return this.config.uuid;
+    }   
 
     public rebuild(): void {
         //
     }
+
+    public disableLettersDrag(): void {
+        this.letters.forEach((letter) => this.disableDragEvents(letter));
+    }
+
+    public enableLettersDrag(): void {
+        this.letters.forEach((letter) => this.setDragEvents(letter));
+    }
+
 
     private build(): void {
         this.letters = this.config.letters.map((letter, i) => {
@@ -41,17 +51,31 @@ export class WordView extends Container {
         letterView.on('enableDrag', () => (this.canDrag = true));
     }
 
+    private disableDragEvents(letterView: LetterView): void {
+        letterView.interactive = true;
+        letterView.off('pointerdown', (e) => this.onDragStart(e, letterView));
+        letterView.off('pointerout', this.stopDrag, this);
+        letterView.off('pointerup', this.stopDrag, this);
+        letterView.off('disableDrag', () => (this.canDrag = false));
+        letterView.off('enableDrag', () => (this.canDrag = true));
+    }
+
     private onDragStart(event, letterView: LetterView): void {
         if (!this.canDrag) return;
+        !this.dragStarted && this.emit('dragStart', this.uuid)
+        this.dragStarted = true;
         event.stopPropagation();
         this.draggingLetter = letterView;
         this.dragPoint = event.data.getLocalPosition(letterView.parent);
         this.dragPoint.x -= letterView.x;
         this.dragPoint.y -= letterView.y;
+        this.removeChild(this.draggingLetter);
+        this.addChild(this.draggingLetter);
         letterView.on('pointermove', this.onDragMove, this);
     }
 
     private stopDrag(): void {
+        this.dragStarted = false;
         this.draggingLetter?.off('pointermove', this.onDragMove, this);
         this.draggingLetter = null;
         

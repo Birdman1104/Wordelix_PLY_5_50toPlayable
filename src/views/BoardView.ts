@@ -34,9 +34,18 @@ export class BoardView extends Container {
         this.words = level.words.map((word, i) => {
             const wordView = new WordView(word);
             wordView.y = i * 128;
+            wordView.on('dragStart', (uuid) => this.onDragStart(uuid));
             this.addChild(wordView);
             return wordView;
         });
+    }
+
+    private onDragStart(uuid: string): void {
+        const word = this.words.find((word) => word.uuid === uuid);
+        if (word) {
+            this.removeChild(word);
+            this.addChild(word);
+        }
     }
 
     private onGameStateUpdate(state: GameState): void {
