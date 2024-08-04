@@ -39,7 +39,7 @@ export class WordView extends Container {
     private build(): void {
         this.buildDisabledLetters();
         this.buildDraggableLetters();
-        // this.buildLine();
+        this.buildLine();
     }
 
     private buildDisabledLetters(): void {
@@ -58,16 +58,15 @@ export class WordView extends Container {
             currentW = this.setLetterPosition(letterView, currentW);
             letterView.setOriginalPosition(letterView.x, letterView.y);
             this.setDragEvents(letterView);
-            this.addChild(letterView);
             return letterView;
         });
     }
 
     private buildLine(): void {
         const line = makeSprite({ texture: Images['game/line'], anchor: new Point(1, 0.5) });
-        const scaleX = 15 - this.disabledLetters.length;
+        const scaleX = 1200 / line.width - this.getWordLength() / line.width
         line.scale.set(scaleX, 0.2);
-        line.position.set(1050, 50);
+        line.position.set(1250, 50);
         this.addChild(line);
     }
 
@@ -134,5 +133,9 @@ export class WordView extends Container {
         letterView.x = currentW + width;
         currentW += width;
         return currentW
+    }
+
+    private getWordLength(): number {
+        return this.config.letters.reduce((acc, letter) => acc + LETTER_SIZES[letter.letter].width, 0);
     }
 }
