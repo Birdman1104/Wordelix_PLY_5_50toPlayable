@@ -1,3 +1,4 @@
+import anime from 'animejs';
 import { Container, Point } from 'pixi.js';
 import { Images } from '../assets';
 import { LETTER_SIZES } from '../configs/LettersSizeConfig';
@@ -14,6 +15,8 @@ export class WordView extends Container {
     private dragStarted = false;
 
     private draggingLetter: LetterView | null;
+
+    private finalPositions: DropDownAreaInfo[] = [];
 
     constructor(private config: WordModel) {
         super();
@@ -63,11 +66,27 @@ export class WordView extends Container {
     }
 
     private buildLine(): void {
+        const color = 0xffffff * Math.random();
         const line = makeSprite({ texture: Images['game/line'], anchor: new Point(1, 0.5) });
-        const scaleX = 1200 / line.width - this.getWordLength() / line.width
+        const scaleX = 1200 / line.width - this.getWordLength() / line.width;
         line.scale.set(scaleX, 0.2);
         line.position.set(1250, 50);
         this.addChild(line);
+
+        let prevX = line.x - line.width;
+        for (let i = 0; i < this.disabledLetters.length; i++) {
+            const letter = this.disabledLetters[i];
+            const startX = prevX;
+            const endX = startX + LETTER_SIZES[letter.letter].width;
+            const startY = letter.y - letter.height / 2;
+            const endY = letter.y + letter.height / 2;
+            const centerX = startX + (endX - startX) / 2;
+            const centerY = startY + (endY - startY) / 2;
+            this.finalPositions.push({ startX, startY, endX, endY, centerX, centerY, isFree: true });
+            prevX = Math.max(prevX, endX + 2);
+            // drawPoint(this, startX, startY, color);
+            // drawPoint(this, endX, endY, color);
+        }
     }
 
     private setDragEvents(letterView: LetterView): void {
@@ -105,6 +124,37 @@ export class WordView extends Container {
     private stopDrag(): void {
         this.dragStarted = false;
         this.draggingLetter?.off('pointermove', this.onDragMove, this);
+
+        if (!this.draggingLetter) return;
+        const { x, y } = this.draggingLetter as LetterView;
+
+        let dropArea = this.finalPositions.find((area) => x > area.startX && x < area.endX && y > area.startY && y < area.endY && area.isFree);
+
+        const lastArea = this.finalPositions[this.finalPositions.length - 1];
+        if(!dropArea && x > lastArea.endX && y > lastArea.startY && y < lastArea.endY && lastArea.isFree) {
+            dropArea = lastArea;
+        }
+
+        if (dropArea) {
+            anime({
+                targets: this.draggingLetter,
+                x: dropArea.centerX,
+                y: dropArea.centerY,
+                duration: 50,
+                easing: 'easeInOutSine',
+            });
+            dropArea.isFree = false;
+            // this.emit('letterDrop', this.uuid, this.draggingLetter.letter);
+        } else {
+            anime({
+                targets: this.draggingLetter,
+                x: this.draggingLetter.originalX,
+                y: this.draggingLetter.originalY,
+                duration: 200,
+                easing: 'easeInOutSine',
+            });
+        }
+
         this.draggingLetter = null;
     }
 
@@ -132,7 +182,7 @@ export class WordView extends Container {
         const { width } = LETTER_SIZES[letterView.letter];
         letterView.x = currentW + width;
         currentW += width;
-        return currentW
+        return currentW;
     }
 
     private getWordLength(): number {
