@@ -24,7 +24,5 @@ export class LetterView extends Container {
         this.sprite.interactive = true;
         this.sprite.tint = 0x000000;
         this.addChild(this.sprite);
-        console.warn('LetterView.build', this.config.letter);
-        
     }
 }

@@ -3,7 +3,6 @@ import { Container, Rectangle } from 'pixi.js';
 import { BoardModelEvents, GameModelEvents } from '../events/ModelEvents';
 import { GameState } from '../models/GameModel';
 import { LevelModel } from '../models/LevelModel';
-import { drawBounds } from '../utils';
 import { WordView } from './WordView';
 
 export class BoardView extends Container {
@@ -17,8 +16,6 @@ export class BoardView extends Container {
             .on(BoardModelEvents.LevelUpdate, this.onLevelUpdate, this);
 
         this.build();
-
-        drawBounds(this)
     }
 
     get viewName() {
