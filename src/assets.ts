@@ -30,6 +30,7 @@ export const assets = {
         'game/Z.png': require('../assets/images/game/Z.png').default,
         'game/bkg.jpg': require('../assets/images/game/bkg.jpg').default,
         'game/hand.png': require('../assets/images/game/hand.png').default,
+        'game/line.png': require('../assets/images/game/line.png').default,
     },
     particles: {},
     sounds: {},
@@ -66,6 +67,7 @@ export const Images = {
     'game/Z': 'game/Z.png',
     'game/bkg': 'game/bkg.jpg',
     'game/hand': 'game/hand.png',
+    'game/line': 'game/line.png',
 };
 
 export const Sounds = {};

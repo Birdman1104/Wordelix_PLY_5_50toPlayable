@@ -23,7 +23,7 @@ export class BoardView extends Container {
     }
 
     public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
-        return new Rectangle(-100, -100, 800, 600);
+        return new Rectangle(-100, 0, 1500, 1400);
     }
 
     private build(): void {

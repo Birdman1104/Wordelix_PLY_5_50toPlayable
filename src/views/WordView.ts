@@ -1,9 +1,14 @@
 import { Container, Point } from 'pixi.js';
+import { Images } from '../assets';
+import { LETTER_SIZES } from '../configs/LettersSizeConfig';
+import { LetterModel } from '../models/LetterModel';
 import { WordModel } from '../models/WordModel';
+import { makeSprite } from '../utils';
 import { LetterView } from './LetterView';
 
 export class WordView extends Container {
-    private letters: LetterView[] = [];
+    private draggableLetters: LetterView[] = [];
+    private disabledLetters: LetterView[] = [];
     private canDrag = true;
     private dragPoint: Point;
     private dragStarted = false;
@@ -17,29 +22,53 @@ export class WordView extends Container {
 
     get uuid(): string {
         return this.config.uuid;
-    }   
+    }
 
     public rebuild(): void {
         //
     }
 
     public disableLettersDrag(): void {
-        this.letters.forEach((letter) => this.disableDragEvents(letter));
+        this.draggableLetters.forEach((letter) => this.disableDragEvents(letter));
     }
 
     public enableLettersDrag(): void {
-        this.letters.forEach((letter) => this.setDragEvents(letter));
+        this.draggableLetters.forEach((letter) => this.setDragEvents(letter));
     }
 
-
     private build(): void {
-        this.letters = this.config.letters.map((letter, i) => {
-            const letterView = new LetterView(letter);
-            letterView.x = 90 * i;
+        this.buildDisabledLetters();
+        this.buildDraggableLetters();
+        // this.buildLine();
+    }
+
+    private buildDisabledLetters(): void {
+        let currentW = 0;
+        this.disabledLetters = this.config.letters.map((letter, i) => {
+            const letterView = this.buildLetter(letter);
+            currentW = this.setLetterPosition(letterView, currentW);
+            return letterView;
+        });
+    }
+
+    private buildDraggableLetters(): void {
+        let currentW = 0;
+        this.draggableLetters = this.config.letters.map((letter, i) => {
+            const letterView = this.buildLetter(letter);
+            currentW = this.setLetterPosition(letterView, currentW);
+            letterView.setOriginalPosition(letterView.x, letterView.y);
             this.setDragEvents(letterView);
             this.addChild(letterView);
             return letterView;
         });
+    }
+
+    private buildLine(): void {
+        const line = makeSprite({ texture: Images['game/line'], anchor: new Point(1, 0.5) });
+        const scaleX = 15 - this.disabledLetters.length;
+        line.scale.set(scaleX, 0.2);
+        line.position.set(1050, 50);
+        this.addChild(line);
     }
 
     private setDragEvents(letterView: LetterView): void {
@@ -62,7 +91,7 @@ export class WordView extends Container {
 
     private onDragStart(event, letterView: LetterView): void {
         if (!this.canDrag) return;
-        !this.dragStarted && this.emit('dragStart', this.uuid)
+        !this.dragStarted && this.emit('dragStart', this.uuid);
         this.dragStarted = true;
         event.stopPropagation();
         this.draggingLetter = letterView;
@@ -78,14 +107,32 @@ export class WordView extends Container {
         this.dragStarted = false;
         this.draggingLetter?.off('pointermove', this.onDragMove, this);
         this.draggingLetter = null;
-        
     }
 
     private onDragMove(event): void {
         if (!this.canDrag || !this.draggingLetter) return;
-        
+
         const newPoint = event.data.getLocalPosition(this.draggingLetter.parent);
         this.draggingLetter.x = newPoint.x - this.dragPoint.x;
         this.draggingLetter.y = newPoint.y - this.dragPoint.y;
+    }
+
+    private buildLetter(letterConfig: LetterModel): LetterView {
+        const letterView = new LetterView(letterConfig);
+        if (letterConfig.letter === 'Q') {
+            letterView.y = 6;
+        }
+        if (letterConfig.letter === 'J') {
+            letterView.y = 11;
+        }
+        this.addChild(letterView);
+        return letterView;
+    }
+
+    private setLetterPosition(letterView: LetterView, currentW: number): number {
+        const { width } = LETTER_SIZES[letterView.letter];
+        letterView.x = currentW + width;
+        currentW += width;
+        return currentW
     }
 }
