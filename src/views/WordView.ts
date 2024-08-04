@@ -35,8 +35,8 @@ export class WordView extends Container {
     private setDragEvents(letterView: LetterView): void {
         letterView.interactive = true;
         letterView.on('pointerdown', (e) => this.onDragStart(e, letterView));
-        letterView.on('pointerout', () => this.stopDrag(letterView), this);
-        letterView.on('pointerup', () => this.stopDrag(letterView), this);
+        letterView.on('pointerout', this.stopDrag, this);
+        letterView.on('pointerup', this.stopDrag, this);
         letterView.on('disableDrag', () => (this.canDrag = false));
         letterView.on('enableDrag', () => (this.canDrag = true));
     }
@@ -51,8 +51,8 @@ export class WordView extends Container {
         letterView.on('pointermove', this.onDragMove, this);
     }
 
-    private stopDrag(letterView: LetterView): void {
-        letterView.off('pointermove', this.onDragMove, this);
+    private stopDrag(): void {
+        this.draggingLetter?.off('pointermove', this.onDragMove, this);
         this.draggingLetter = null;
         
     }
