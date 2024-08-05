@@ -5,6 +5,7 @@ import { LETTER_SIZES } from '../configs/LettersSizeConfig';
 import { LetterModel } from '../models/LetterModel';
 import { WordModel } from '../models/WordModel';
 import { makeSprite } from '../utils';
+import { DropDownAreaInfo } from './DropDownAreaInfo';
 import { LetterView } from './LetterView';
 
 export class WordView extends Container {
@@ -25,6 +26,10 @@ export class WordView extends Container {
 
     get uuid(): string {
         return this.config.uuid;
+    }
+
+    get answer(): string {
+        return this.config.answer;
     }
 
     public rebuild(): void {
@@ -56,7 +61,7 @@ export class WordView extends Container {
 
     private buildDraggableLetters(): void {
         let currentW = 0;
-        this.draggableLetters = this.config.letters.map((letter, i) => {
+        this.draggableLetters = this.config.letters.map((letter) => {
             const letterView = this.buildLetter(letter);
             currentW = this.setLetterPosition(letterView, currentW);
             letterView.setOriginalPosition(letterView.x, letterView.y);
@@ -82,7 +87,8 @@ export class WordView extends Container {
             const endY = letter.y + letter.height / 2;
             const centerX = startX + (endX - startX) / 2;
             const centerY = startY + (endY - startY) / 2;
-            this.finalPositions.push({ startX, startY, endX, endY, centerX, centerY, isFree: true });
+            const dropDownAreaInfo = new DropDownAreaInfo({ startX, startY, endX, endY, centerX, centerY, isFree: true, answer: this.answer[i] });
+            this.finalPositions.push(dropDownAreaInfo);
             prevX = Math.max(prevX, endX + 2);
             // drawPoint(this, startX, startY, color);
             // drawPoint(this, endX, endY, color);
@@ -129,7 +135,7 @@ export class WordView extends Container {
         const { x, y } = this.draggingLetter as LetterView;
 
         let dropArea = this.finalPositions.find((area) => x > area.startX && x < area.endX && y > area.startY && y < area.endY && area.isFree);
-
+        
         const lastArea = this.finalPositions[this.finalPositions.length - 1];
         if(!dropArea && x > lastArea.endX && y > lastArea.startY && y < lastArea.endY && lastArea.isFree) {
             dropArea = lastArea;
@@ -143,7 +149,10 @@ export class WordView extends Container {
                 duration: 50,
                 easing: 'easeInOutSine',
             });
-            dropArea.isFree = false;
+            dropArea.setLetter(this.draggingLetter.letter);
+            if(this.isFilled()) {
+                this.checkAnswer()
+            }
             // this.emit('letterDrop', this.uuid, this.draggingLetter.letter);
         } else {
             anime({
@@ -187,5 +196,18 @@ export class WordView extends Container {
 
     private getWordLength(): number {
         return this.config.letters.reduce((acc, letter) => acc + LETTER_SIZES[letter.letter].width, 0);
+    }
+
+    private isFilled(): boolean {
+        return this.finalPositions.every((area) => !area.isFree);
+    }
+
+    private checkAnswer(): void {
+        const answer = this.finalPositions.map((area) => area.insertedLetter).join('');
+        if(answer === this.answer) {
+            console.warn('COMPLETED');
+        } else {
+            console.warn('WRONG');
+        }
     }
 }

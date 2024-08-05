@@ -38,13 +38,3 @@ type WordConfig = {
     mess: string;
     answer: string;
 };
-
-type DropDownAreaInfo = {
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
-    centerX: number;
-    centerY: number;
-    isFree: boolean;
-}
