@@ -1,7 +1,9 @@
+import { lego } from '@armathai/lego';
 import anime from 'animejs';
 import { Container, Point } from 'pixi.js';
 import { Images } from '../assets';
 import { LETTER_SIZES } from '../configs/LettersSizeConfig';
+import { WordViewEvents } from '../events/MainEvents';
 import { LetterModel } from '../models/LetterModel';
 import { WordModel } from '../models/WordModel';
 import { makeSprite } from '../utils';
@@ -173,6 +175,8 @@ export class WordView extends Container {
     private checkAnswer(): void {
         const answer = this.finalPositions.map((area) => area.insertedLetter).join('');
         if (answer === this.answer) {
+            this.disableLettersDrag()
+            lego.event.emit(WordViewEvents.Solved, this.uuid);
             console.warn('COMPLETED');
         } else {
             console.warn('WRONG');

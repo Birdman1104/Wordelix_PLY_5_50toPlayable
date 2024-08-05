@@ -1,10 +1,11 @@
 import { lego } from '@armathai/lego';
-import { MainGameEvents, TakeMe } from '../events/MainEvents';
+import { MainGameEvents, TakeMe, WordViewEvents } from '../events/MainEvents';
 import { AdModelEvents, GameModelEvents } from '../events/ModelEvents';
 import {
     onAdStatusUpdateCommand,
     onGameStateUpdateCommand,
     onMainViewReadyCommand,
+    onWordSolvedCommand,
     resizeCommand,
     takeToStoreCommand
 } from './Commands';
@@ -33,6 +34,10 @@ const eventCommandPairs = Object.freeze([
     {
         event: GameModelEvents.StateUpdate,
         command: onGameStateUpdateCommand,
+    },
+    {
+        event: WordViewEvents.Solved,
+        command: onWordSolvedCommand,
     },
     {
         event: MainGameEvents.Resize,

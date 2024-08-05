@@ -23,6 +23,10 @@ export class LetterView extends Container {
         return this.config.letter;
     }
 
+    get area(): DropDownAreaInfo | null {
+        return this.dropArea
+    }
+
     public setOriginalPosition(x: number, y: number): void {
         this.originalX = x;
         this.originalY = y;

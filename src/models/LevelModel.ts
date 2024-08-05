@@ -42,6 +42,10 @@ export class LevelModel extends ObservableModel {
         this._words = value;
     }
 
+    public getWordModelByUuid(uuid: string): WordModel | undefined {
+        return this.words.find((wordModel: WordModel) => wordModel.uuid === uuid);
+    }
+
     public initialize(): void {
         //
     }

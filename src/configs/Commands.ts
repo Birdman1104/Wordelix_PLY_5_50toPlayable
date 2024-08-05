@@ -9,6 +9,7 @@ import {
     gameModelGuard,
     hintModelGuard,
     hintParamGuard,
+    isCurrentLevelCompleteGuard,
     soundParamGuard
 } from './Guards';
 
@@ -113,6 +114,20 @@ const setGameStateCommand = (state: GameState): void => Head.gameModel?.setState
 const showCtaCommand = (): void => Head.ad?.cta?.show();
 
 const turnOffTutorialModeCommand = (): void => Head.gameModel?.turnOffTutorialMode();
+
+export const onWordSolvedCommand = (uuid: string): void => {
+    lego.command
+    .payload(uuid).execute(setWordToSolvedCommand)
+    .guard(isCurrentLevelCompleteGuard).execute(switchToNextLevelCommand);
+}
+
+const setWordToSolvedCommand = (uuid: string): void => {
+    Head.gameModel?.board?.getWordModelByUuid(uuid)?.setSolved();
+}
+
+const switchToNextLevelCommand = (): void => {
+    Head.gameModel?.board?.switchToNextLevel();
+}
 
 export const onGameStateUpdateCommand = (state: GameState): void => {
     switch (state) {

@@ -9,16 +9,14 @@ export const MainGameEvents = {
 };
 
 export const BoardEvents = {
-    CardClick: 'BoardEventsCardClick',
     RightAnimationComplete: 'BoardEventsRightAnimationComplete',
     WrongAnimationComplete: 'BoardEventsWrongAnimationComplete',
-    CardCompleteAnimationComplete: 'BoardEventsCardCompleteAnimationComplete',
 };
+
+export const WordViewEvents = {
+    Solved: 'WordViewEventsSolved',
+}
 
 export const TakeMe = {
     ToStore: 'TakeMeToStore',
-};
-
-export const KeyboardEvents = {
-    KeyClicked: 'KeyboardEventsKeyClicked',
 };

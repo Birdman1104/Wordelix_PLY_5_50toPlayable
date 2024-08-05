@@ -1,7 +1,6 @@
 import { lego } from '@armathai/lego';
 import { Howl } from 'howler';
 
-import { BoardEvents, KeyboardEvents } from './events/MainEvents';
 import { GameModelEvents } from './events/ModelEvents';
 import { GameState } from './models/GameModel';
 
@@ -21,8 +20,6 @@ class SoundControl {
     public constructor() {
         this.sounds = {};
         lego.event
-            .on(KeyboardEvents.KeyClicked, this.playClick, this)
-            .on(BoardEvents.CardClick, this.playClick, this)
             .on(GameModelEvents.StateUpdate, this.onGameStateUpdate, this);
     }
 
