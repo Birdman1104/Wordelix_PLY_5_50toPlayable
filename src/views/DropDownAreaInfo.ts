@@ -8,6 +8,7 @@ export class DropDownAreaInfo {
     public isFree: boolean;
     public answer: string;
     public insertedLetter: string;
+    public insertedLetterId: string;
 
     constructor(info) {
         this.startX = info.startX;
@@ -20,8 +21,15 @@ export class DropDownAreaInfo {
         this.answer = info.answer;
     }
 
-    public setLetter(letter: string): void {
+    public setLetter(letter: string, uuid: string): void {
         this.insertedLetter = letter;
+        this.insertedLetterId = uuid;
         this.isFree = false;
+    }
+
+    public empty(): void {
+        this.insertedLetter = '';
+        this.insertedLetterId = '';
+        this.isFree = true;
     }
 }

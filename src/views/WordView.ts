@@ -54,7 +54,7 @@ export class WordView extends Container {
         let currentW = 0;
         this.disabledLetters = this.config.letters.map((letter, i) => {
             const letterView = this.buildLetter(letter);
-            currentW = this.setLetterPosition(letterView, currentW);
+            currentW = this.setLetterInitialPosition(letterView, currentW);
             return letterView;
         });
     }
@@ -63,7 +63,7 @@ export class WordView extends Container {
         let currentW = 0;
         this.draggableLetters = this.config.letters.map((letter) => {
             const letterView = this.buildLetter(letter);
-            currentW = this.setLetterPosition(letterView, currentW);
+            currentW = this.setLetterInitialPosition(letterView, currentW);
             letterView.setOriginalPosition(letterView.x, letterView.y);
             this.setDragEvents(letterView);
             return letterView;
@@ -71,28 +71,14 @@ export class WordView extends Container {
     }
 
     private buildLine(): void {
-        const color = 0xffffff * Math.random();
         const line = makeSprite({ texture: Images['game/line'], anchor: new Point(1, 0.5) });
         const scaleX = 1200 / line.width - this.getWordLength() / line.width;
         line.scale.set(scaleX, 0.2);
         line.position.set(1250, 50);
         this.addChild(line);
 
-        let prevX = line.x - line.width;
-        for (let i = 0; i < this.disabledLetters.length; i++) {
-            const letter = this.disabledLetters[i];
-            const startX = prevX;
-            const endX = startX + LETTER_SIZES[letter.letter].width;
-            const startY = letter.y - letter.height / 2;
-            const endY = letter.y + letter.height / 2;
-            const centerX = startX + (endX - startX) / 2;
-            const centerY = startY + (endY - startY) / 2;
-            const dropDownAreaInfo = new DropDownAreaInfo({ startX, startY, endX, endY, centerX, centerY, isFree: true, answer: this.answer[i] });
-            this.finalPositions.push(dropDownAreaInfo);
-            prevX = Math.max(prevX, endX + 2);
-            // drawPoint(this, startX, startY, color);
-            // drawPoint(this, endX, endY, color);
-        }
+        const startX = line.x - line.width;
+        this.setDropAreas(startX);
     }
 
     private setDragEvents(letterView: LetterView): void {
@@ -118,7 +104,9 @@ export class WordView extends Container {
         !this.dragStarted && this.emit('dragStart', this.uuid);
         this.dragStarted = true;
         event.stopPropagation();
+        
         this.draggingLetter = letterView;
+        this.draggingLetter.startDrag();
         this.dragPoint = event.data.getLocalPosition(letterView.parent);
         this.dragPoint.x -= letterView.x;
         this.dragPoint.y -= letterView.y;
@@ -129,39 +117,16 @@ export class WordView extends Container {
 
     private stopDrag(): void {
         this.dragStarted = false;
-        this.draggingLetter?.off('pointermove', this.onDragMove, this);
-
         if (!this.draggingLetter) return;
-        const { x, y } = this.draggingLetter as LetterView;
+        this.draggingLetter.off('pointermove', this.onDragMove, this);
 
-        let dropArea = this.finalPositions.find((area) => x > area.startX && x < area.endX && y > area.startY && y < area.endY && area.isFree);
-        
-        const lastArea = this.finalPositions[this.finalPositions.length - 1];
-        if(!dropArea && x > lastArea.endX && y > lastArea.startY && y < lastArea.endY && lastArea.isFree) {
-            dropArea = lastArea;
-        }
-
+        const dropArea = this.findDropArea();
         if (dropArea) {
-            anime({
-                targets: this.draggingLetter,
-                x: dropArea.centerX,
-                y: dropArea.centerY,
-                duration: 50,
-                easing: 'easeInOutSine',
-            });
-            dropArea.setLetter(this.draggingLetter.letter);
-            if(this.isFilled()) {
-                this.checkAnswer()
-            }
-            // this.emit('letterDrop', this.uuid, this.draggingLetter.letter);
+            this.dropLetterToArea(dropArea, this.draggingLetter);
+            dropArea.setLetter(this.draggingLetter.letter, this.draggingLetter.uuid);
+            this.isFilled() && this.checkAnswer();
         } else {
-            anime({
-                targets: this.draggingLetter,
-                x: this.draggingLetter.originalX,
-                y: this.draggingLetter.originalY,
-                duration: 200,
-                easing: 'easeInOutSine',
-            });
+            this.dropLetterToOriginalPosition();
         }
 
         this.draggingLetter = null;
@@ -173,6 +138,9 @@ export class WordView extends Container {
         const newPoint = event.data.getLocalPosition(this.draggingLetter.parent);
         this.draggingLetter.x = newPoint.x - this.dragPoint.x;
         this.draggingLetter.y = newPoint.y - this.dragPoint.y;
+
+        this.handleCollisionFromLeft();
+        this.handleCollisionFromRight()
     }
 
     private buildLetter(letterConfig: LetterModel): LetterView {
@@ -187,7 +155,7 @@ export class WordView extends Container {
         return letterView;
     }
 
-    private setLetterPosition(letterView: LetterView, currentW: number): number {
+    private setLetterInitialPosition(letterView: LetterView, currentW: number): number {
         const { width } = LETTER_SIZES[letterView.letter];
         letterView.x = currentW + width;
         currentW += width;
@@ -204,10 +172,111 @@ export class WordView extends Container {
 
     private checkAnswer(): void {
         const answer = this.finalPositions.map((area) => area.insertedLetter).join('');
-        if(answer === this.answer) {
+        if (answer === this.answer) {
             console.warn('COMPLETED');
         } else {
             console.warn('WRONG');
         }
+    }
+
+    private setDropAreas(startX = 0): void {
+        let prevX = startX;
+        for (let i = 0; i < this.disabledLetters.length; i++) {
+            const letter = this.disabledLetters[i];
+            const startX = prevX;
+            const endX = startX + LETTER_SIZES[letter.letter].width;
+            const startY = letter.y - letter.height / 2;
+            const endY = letter.y + letter.height / 2;
+            const centerX = startX + (endX - startX) / 2;
+            const centerY = startY + (endY - startY) / 2;
+            const dropDownAreaInfo = new DropDownAreaInfo({
+                startX,
+                startY,
+                endX,
+                endY,
+                centerX,
+                centerY,
+                isFree: true,
+                answer: this.answer[i],
+            });
+            this.finalPositions.push(dropDownAreaInfo);
+            prevX = Math.max(prevX, endX + 2);
+        }
+    }
+
+    private findDropArea(): DropDownAreaInfo | undefined {
+        const { x, y } = this.draggingLetter as LetterView;
+        let dropArea = this.finalPositions.find(
+            (area) => x > area.startX && x < area.endX && area.isFree,
+        );
+
+        const lastArea = this.finalPositions[this.finalPositions.length - 1];
+        if (!dropArea && x > lastArea.endX && lastArea.isFree) {
+            dropArea = lastArea;
+        }
+
+        return dropArea;
+    }
+
+    private handleCollisionFromLeft(): void {
+        const { x } = this.draggingLetter as LetterView;
+        const dropArea = this.finalPositions.find((area) => x > area.startX && x <= area.centerX);
+        if (!dropArea || dropArea.isFree) return;
+        const collidedLetter = this.draggableLetters.find((letter) => letter.uuid === dropArea.insertedLetterId);
+        if(!collidedLetter) return;
+
+        const leftSideAreas = this.finalPositions.filter(area => area.endX <= collidedLetter.x).reverse();
+        const firstFreeArea = leftSideAreas.find(area => area.isFree);
+
+        if(!firstFreeArea) return;
+
+        const currentArea = collidedLetter.area
+        currentArea?.empty();
+
+        this.dropLetterToArea(firstFreeArea, collidedLetter);
+        firstFreeArea.empty()
+        firstFreeArea.setLetter(collidedLetter.letter, collidedLetter.uuid);
+    }
+    
+    private handleCollisionFromRight(): void {
+        const { x } = this.draggingLetter as LetterView;
+        const dropArea = this.finalPositions.find((area) => x > area.centerX && x <= area.endX);
+        if (!dropArea || dropArea.isFree) return;
+        const collidedLetter = this.draggableLetters.find((letter) => letter.uuid === dropArea.insertedLetterId);
+        if(!collidedLetter) return;
+
+        const leftSideAreas = this.finalPositions.filter(area => area.endX >= collidedLetter.x);
+        const firstFreeArea = leftSideAreas.find(area => area.isFree);
+
+        if(!firstFreeArea) return;
+
+        const currentArea = collidedLetter.area
+        currentArea?.empty();
+
+        this.dropLetterToArea(firstFreeArea, collidedLetter);
+        firstFreeArea.empty()
+        firstFreeArea.setLetter(collidedLetter.letter, collidedLetter.uuid);
+    }
+
+    private dropLetterToArea(dropArea: DropDownAreaInfo, letter: LetterView): void {
+        anime({
+            targets: letter,
+            x: dropArea.centerX,
+            y: dropArea.centerY,
+            duration: 50,
+            easing: 'easeInOutSine',
+        });
+        letter.dropTo(dropArea);
+    }
+
+    private dropLetterToOriginalPosition(): void {
+        if (!this.draggingLetter) return;
+        anime({
+            targets: this.draggingLetter,
+            x: this.draggingLetter.originalX,
+            y: this.draggingLetter.originalY,
+            duration: 200,
+            easing: 'easeInOutSine',
+        });
     }
 }
