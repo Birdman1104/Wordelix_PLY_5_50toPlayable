@@ -31,7 +31,7 @@ const getGameViewGridPortraitConfig = () => {
         cells: [
             {
                 name: 'board',
-                bounds: { x: 0, y: 0, width: 1, height: 1 },
+                bounds: { x: 0.05, y: 0, width: 0.9, height: 1 },
             },
         ],
     };
