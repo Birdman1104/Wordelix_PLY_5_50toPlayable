@@ -11,6 +11,7 @@ export class BoardView extends Container {
     private title: Text;
     private words: WordView[] = [];
     private wordsContainer: WordsContainer;
+    private level: number = 1;
 
     constructor() {
         super();
@@ -27,7 +28,11 @@ export class BoardView extends Container {
     }
 
     public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
-        return new Rectangle(0, 0, 1500, 1400);
+        return new Rectangle(0, this.level === 1 ? 0 : -100, 1500, this.level === 1 ? 520 : 2000);
+    }
+
+    public rebuild(): void {
+        //
     }
 
     private build(): void {
@@ -35,22 +40,31 @@ export class BoardView extends Container {
     }
 
     private onLevelUpdate(level: LevelModel): void {
-        this.buildWords(level.words);
+        this.level = level.level;
+        this.buildWords(level.words, level.level);
         this.buildTitle(level.title);
+        this.emit('rebuild');
     }
 
     private buildTitle(title: string): void {
+        const fontSize = this.level === 1 ? 106 : 148;
         if (this.title) {
+            this.title.style.fontSize = fontSize;
             this.title.text = title;
         } else {
-            this.title = new Text(title, { fill: 0x000000, fontSize: 72, stroke: 0x000000, strokeThickness: 1 });
+            this.title = new Text(title, { fill: 0x000000, fontSize, stroke: 0x000000, strokeThickness: 1 });
             this.title.anchor.set(0.5);
-            this.title.position.set(750, 200);
-            this.addChild(this.title);
+            this.title.position.set(750, -150);
+            this.wordsContainer.addChild(this.title);
         }
     }
 
-    private buildWords(words: WordModel[]): void {
+    private buildWords(words: WordModel[], level: number): void {
+        if (this.wordsContainer && this.words.length !== 0) {
+            this.wordsContainer.destroy();
+            this.words.forEach((w) => w.destroy());
+            this.words = [];
+        }
         this.wordsContainer = new WordsContainer();
         this.words = words.map((word, i) => {
             const wordView = new WordView(word);

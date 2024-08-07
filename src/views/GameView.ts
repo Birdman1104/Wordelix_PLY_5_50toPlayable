@@ -27,6 +27,7 @@ export class GameView extends PixiGrid {
     }
 
     public rebuild(config?: ICellConfig | undefined): void {
+        this.board?.rebuild();
         super.rebuild(this.getGridConfig());
     }
 
@@ -44,6 +45,7 @@ export class GameView extends PixiGrid {
 
     private buildBoard() {
         this.board = new BoardView();
+        this.board.on('rebuild', this.rebuild, this);
         this.setChild('board', this.board);
     }
 

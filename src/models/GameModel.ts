@@ -4,6 +4,7 @@ import { ObservableModel } from './ObservableModel';
 export enum GameState {
     Unknown = 'Unknown',
     Idle = 'Idle',
+    SwitchingLevels = 'SwitchingLevels',
 }
 
 export class GameModel extends ObservableModel {

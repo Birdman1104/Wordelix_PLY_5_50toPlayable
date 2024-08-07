@@ -177,9 +177,8 @@ export class WordView extends Container {
         if (answer === this.answer) {
             this.disableLettersDrag()
             lego.event.emit(WordViewEvents.Solved, this.uuid);
-            console.warn('COMPLETED');
         } else {
-            console.warn('WRONG');
+            // console.warn('WRONG');
         }
     }
 
