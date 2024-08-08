@@ -1,5 +1,6 @@
 import { lego } from '@armathai/lego';
 import { ICellConfig, PixiGrid } from '@armathai/pixi-grid';
+import anime from 'animejs';
 import { Graphics } from 'pixi.js';
 import { Images } from '../assets';
 import { getCTAGridConfig } from '../configs/gridConfigs/CTAViewGC';
@@ -65,5 +66,46 @@ export class CTAView extends PixiGrid {
             lego.event.emit(TakeMe.ToStore);
         });
         this.setChild('button', button);
+
+        const ls = logo.scale.x;
+        const bs = button.scale.x;
+        const ns = name.scale.x;
+
+        logo.scale.set(0);
+        button.scale.set(0);
+        name.scale.set(0);
+
+        anime({
+            targets: button.scale,
+            x: bs,
+            y: bs,
+            duration: 200,
+            easing: 'easeInOutSine',
+        });
+        anime({
+            targets: logo.scale,
+            x: ls,
+            y: ls,
+            duration: 200,
+            easing: 'easeInOutSine',
+            complete: () => {
+                anime({
+                    targets: button.scale,
+                    x: [bs, bs * 1.1, bs],
+                    y: [bs, bs * 1.1, bs],
+                    duration: 500,
+                    easing: 'easeInOutSine',
+                    directions: 'alternate',
+                    loop: true,
+                });
+            },
+        });
+        anime({
+            targets: name.scale,
+            x: ns,
+            y: ns,
+            duration: 200,
+            easing: 'easeInOutSine',
+        });
     }
 }
