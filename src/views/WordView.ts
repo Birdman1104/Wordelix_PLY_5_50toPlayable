@@ -54,7 +54,10 @@ export class WordView extends Container {
             };
         }
         const index = this.finalPositions.indexOf(freeArea);
-        const letter = this.draggableLetters.find((letter) => letter.letter === freeArea.answer);
+        const letters = this.draggableLetters.filter((letter) => letter.letter === freeArea.answer)
+        
+        const letter = this.isFilled() ? letters[0] : letters.find((letter) => !letter.area);  
+        
         if (!letter) {
             return {
                 positions: [],
