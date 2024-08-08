@@ -27,6 +27,7 @@ class PixiStage extends Container {
         this.bgView?.rebuild();
         this.gameView?.rebuild();
         this.uiView?.rebuild();
+        this.cta?.rebuild();
         this.foregroundView?.rebuild();
     }
 

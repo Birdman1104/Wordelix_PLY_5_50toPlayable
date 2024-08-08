@@ -5,7 +5,8 @@ import { WordModel } from './WordModel';
 
 export class BoardModel extends ObservableModel {
     private _level: LevelModel;
-    private _currentLevel: number = 0;
+    private _currentLevel = 0;
+    private _wordsSolved = 0
 
     constructor() {
         super('BoardModel');
@@ -19,6 +20,14 @@ export class BoardModel extends ObservableModel {
 
     public set level(value: LevelModel) {
         this._level = value;
+    }
+
+    public get wordsSolved(): number {
+        return this._wordsSolved;
+    }
+
+    public set wordsSolved(value: number) {
+        this._wordsSolved = value;
     }
 
     public getWordModelByUuid(uuid: string): WordModel | undefined{
@@ -38,7 +47,12 @@ export class BoardModel extends ObservableModel {
         this.initializeLevel();
     }
 
+    public increaseWordsSolved(): void {
+        this._wordsSolved++;
+    }
+
     public initializeLevel(): void {
+        this._wordsSolved = 0;
         const levelConfig = LEVELS_CONFIG[this._currentLevel]
         this.level = new LevelModel(levelConfig);
         this.level.initialize();

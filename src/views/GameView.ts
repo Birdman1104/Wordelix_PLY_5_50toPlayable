@@ -45,9 +45,16 @@ export class GameView extends PixiGrid {
 
     private buildBoard() {
         this.board = new BoardView();
-        this.board.on('rebuild', this.rebuild, this);
+        this.board.on('rebuild', this.boardRebuild, this);
         this.setChild('board', this.board);
     }
+
+    private boardRebuild(): void {
+        this.removeContent(this.board);
+        this.setChild('board', this.board)
+        this.rebuild();
+    }
+
 
     private destroyBoard(): void {
         this.board.destroy();

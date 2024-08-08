@@ -10,6 +10,7 @@ import {
     hintModelGuard,
     hintParamGuard,
     isCurrentLevelCompleteGuard,
+    isGameOverGuard,
     soundParamGuard,
 } from './Guards';
 
@@ -119,10 +120,16 @@ export const onWordSolvedCommand = (uuid: string): void => {
         .payload(uuid)
         .execute(setWordToSolvedCommand)
 
+        .execute(increaseWordsSolvedCommand)
+
         .execute(turnOffTutorialModeCommand)
 
         .guard(hintModelGuard)
         .execute(destroyHintModelCommand)
+
+        .guard(isGameOverGuard)
+        .payload(AdStatus.Cta)
+        .execute(setAdStatusCommand)
 
         .guard(isCurrentLevelCompleteGuard)
         .execute(switchToNextLevelCommand);
@@ -130,6 +137,10 @@ export const onWordSolvedCommand = (uuid: string): void => {
 
 const setWordToSolvedCommand = (uuid: string): void => {
     Head.gameModel?.board?.getWordModelByUuid(uuid)?.setSolved();
+};
+
+const increaseWordsSolvedCommand = (): void => {
+    Head.gameModel?.board?.increaseWordsSolved();
 };
 
 const switchToNextLevelCommand = (): void => {
@@ -182,5 +193,7 @@ export const resizeCommand = (): void => {
 };
 
 export const takeToStoreCommand = (): void => {
+    console.warn('TAKE ME TO STORE');
+    
     window.installCTA && window.installCTA();
 };

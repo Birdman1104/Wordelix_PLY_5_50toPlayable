@@ -41,3 +41,8 @@ export const isTutorialModeGuard = (): boolean => {
 export const isCurrentLevelCompleteGuard = (): boolean => {
     return !!Head.gameModel?.board?.isLevelComplete();
 }
+
+export const isGameOverGuard = (): boolean => {
+    const board = Head.gameModel?.board;
+    return board?.wordsSolved === GAME_CONFIG.wordsFromSecondLevel && board.level.level === 2;
+}

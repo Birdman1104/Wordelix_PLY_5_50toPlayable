@@ -29,9 +29,12 @@ export const assets = {
         'game/Y.png': require('../assets/images/game/Y.png').default,
         'game/Z.png': require('../assets/images/game/Z.png').default,
         'game/bkg.jpg': require('../assets/images/game/bkg.jpg').default,
+        'game/cta_button.png': require('../assets/images/game/cta_button.png').default,
         'game/hand.png': require('../assets/images/game/hand.png').default,
         'game/line.png': require('../assets/images/game/line.png').default,
+        'game/logo.png': require('../assets/images/game/logo.png').default,
         'game/square.png': require('../assets/images/game/square.png').default,
+        'game/wordelix.png': require('../assets/images/game/wordelix.png').default,
     },
     particles: {},
     sounds: {},
@@ -67,9 +70,12 @@ export const Images = {
     'game/Y': 'game/Y.png',
     'game/Z': 'game/Z.png',
     'game/bkg': 'game/bkg.jpg',
+    'game/cta_button': 'game/cta_button.png',
     'game/hand': 'game/hand.png',
     'game/line': 'game/line.png',
+    'game/logo': 'game/logo.png',
     'game/square': 'game/square.png',
+    'game/wordelix': 'game/wordelix.png',
 };
 
 export const Sounds = {};

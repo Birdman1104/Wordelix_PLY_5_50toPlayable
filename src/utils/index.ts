@@ -218,3 +218,8 @@ export const sample = (arr: any[]): any => {
 export const difference = (arrA: any[], arrB: any[]): any[] => {
     return arrA.filter((x) => !arrB.includes(x));
 };
+
+export const isAppleDevice = () => {
+    // @ts-ignore
+    return /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) && !window.MSStream;
+}

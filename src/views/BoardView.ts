@@ -12,6 +12,7 @@ export class BoardView extends Container {
     private words: WordView[] = [];
     private wordsContainer: WordsContainer;
     private level: number = 2;
+    // private bnds: Graphics;
 
     constructor() {
         super();
@@ -34,7 +35,7 @@ export class BoardView extends Container {
     }
 
     public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
-        return new Rectangle(0, this.level === 1 ? -150 : 0, 1500, this.level === 1 ? 820 : 2000);
+        return new Rectangle(0, -220, 1500, this.level === 1 ? 820 : 1800);
     }
 
     public getWordByUuid(uuid: string): WordView | undefined {
@@ -42,7 +43,11 @@ export class BoardView extends Container {
     }
 
     public rebuild(): void {
-        //
+        // this.bnds?.clear();
+        // this.bnds?.destroy();
+        // this.bnds = drawBounds(this);
+        this.updateTransform();
+        this.calculateBounds();
     }
 
     private build(): void {
@@ -83,7 +88,7 @@ export class BoardView extends Container {
             this.wordsContainer.addChild(wordView);
             return wordView;
         });
-        this.wordsContainer.position.set(0, this.height / 2);
+        // this.wordsContainer.position.set(0, this.height / 2);
         this.addChild(this.wordsContainer);
     }
 
