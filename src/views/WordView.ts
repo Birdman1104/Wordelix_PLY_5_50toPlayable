@@ -6,7 +6,7 @@ import { LETTER_SIZES } from '../configs/LettersSizeConfig';
 import { WordViewEvents } from '../events/MainEvents';
 import { LetterModel } from '../models/LetterModel';
 import { WordModel } from '../models/WordModel';
-import { callIfExists, makeSprite } from '../utils';
+import { callIfExists, delayRunnable, makeSprite } from '../utils';
 import { DropDownAreaInfo } from './DropDownAreaInfo';
 import { LetterView } from './LetterView';
 
@@ -54,17 +54,17 @@ export class WordView extends Container {
             };
         }
         const index = this.finalPositions.indexOf(freeArea);
-        
+
         let letter;
-        if(this.isFilled()) {
-            const letters = this.draggableLetters.filter((letter) => letter.letter === freeArea.answer)
-            letter = letters[0]
+        if (this.isFilled()) {
+            const letters = this.draggableLetters.filter((letter) => letter.letter === freeArea.answer);
+            letter = letters[0];
         } else {
-            const f = this.draggableLetters.filter((letter) => letter.letter === freeArea.answer)
+            const f = this.draggableLetters.filter((letter) => letter.letter === freeArea.answer);
             const l = f.find((letter) => letter.area !== freeArea && !letter.area);
-            letter = f.length === 1 ? f[0] : l;   
+            letter = f.length === 1 ? f[0] : l;
         }
-        
+
         if (!letter) {
             return {
                 positions: [],
@@ -88,7 +88,14 @@ export class WordView extends Container {
     }
 
     public setSolved(): void {
-        this.draggableLetters.forEach((letter) => letter.setSolved());
+        this.draggableLetters.forEach((letter, i) => {
+            const cb = (): void => {
+                delayRunnable(0.1, () => {
+                    lego.event.emit(WordViewEvents.WinAnimationComplete);
+                })
+            };
+            letter.setSolved(i === 0 && cb );
+        });
     }
 
     public disableLettersDrag(): void {
@@ -136,7 +143,7 @@ export class WordView extends Container {
         line.on('pointerdown', () => {
             console.warn(this.finalPositions.map((area) => area.insertedLetter));
         });
-        
+
         const startX = line.x - line.width;
         this.setDropAreas(startX);
     }
@@ -177,7 +184,7 @@ export class WordView extends Container {
         const dropArea = this.findDropArea();
 
         if (dropArea) {
-            this.draggingLetter.emptyArea()
+            this.draggingLetter.emptyArea();
             if (!dropArea.isFree) {
                 this.handleCollisionFromLeft(dropArea);
                 this.handleCollisionFromRight(dropArea);
@@ -221,14 +228,12 @@ export class WordView extends Container {
         return currentW;
     }
 
-
-
     private checkAnswer(): void {
         const answer = this.finalPositions.map((area) => area.insertedLetter).join('');
         if (answer === this.answer) {
             this.disableLettersDrag();
             lego.event.emit(WordViewEvents.Solved, this.uuid);
-        } 
+        }
     }
 
     private setDropAreas(startX = 0): void {

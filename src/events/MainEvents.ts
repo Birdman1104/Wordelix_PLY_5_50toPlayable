@@ -17,6 +17,7 @@ export const WordViewEvents = {
     Solved: 'WordViewEventsSolved',
     DragStart: 'WordViewEventsDragStart',
     DragComplete: 'WordViewEventsDragComplete',
+    WinAnimationComplete: 'WordViewEventsWinAnimationComplete',
 }
 
 export const TakeMe = {

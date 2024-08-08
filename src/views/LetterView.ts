@@ -3,7 +3,7 @@ import { Container, Sprite } from 'pixi.js';
 import { Images } from '../assets';
 import { BoundsType, GAME_CONFIG } from '../configs/GameConfig';
 import { LetterModel } from '../models/LetterModel';
-import { makeSprite } from '../utils';
+import { callIfExists, makeSprite } from '../utils';
 import { DropDownAreaInfo } from './DropDownAreaInfo';
 
 export class LetterView extends Container {
@@ -35,7 +35,7 @@ export class LetterView extends Container {
         this.originalY = y;
     }
 
-    public setSolved(): void {
+    public setSolved(cb?): void {
         anime({
             targets: this.scale,
             x: 1.2,
@@ -44,6 +44,9 @@ export class LetterView extends Container {
             easing: 'easeInOutSine',
             direction: 'alternate',
             loop: 1,
+            complete: () => {
+                callIfExists(cb);
+            },
         });
         this.sprite.tint = 0x0ac950;
         this.outline && (this.outline.tint = 0x0ac950);
@@ -114,7 +117,6 @@ export class LetterView extends Container {
 
         this.outline && (this.outline.tint = 0x000000);
         this.outline && (this.outline.visible = false);
-        
     }
 
     private buildSquareOutline(): void {

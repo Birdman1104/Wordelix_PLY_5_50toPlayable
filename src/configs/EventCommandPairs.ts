@@ -9,7 +9,8 @@ import {
     onMainViewReadyCommand,
     onWordSolvedCommand,
     resizeCommand,
-    takeToStoreCommand
+    takeToStoreCommand,
+    winAnimationCompleteCommand
 } from './Commands';
 
 export const mapCommands = () => {
@@ -40,6 +41,10 @@ const eventCommandPairs = Object.freeze([
     {
         event: WordViewEvents.Solved,
         command: onWordSolvedCommand,
+    },
+    {
+        event: WordViewEvents.WinAnimationComplete,
+        command: winAnimationCompleteCommand,
     },
     {
         event: WordViewEvents.DragStart,

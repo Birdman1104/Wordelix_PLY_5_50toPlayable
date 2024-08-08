@@ -129,10 +129,11 @@ export const onWordSolvedCommand = (uuid: string): void => {
 
         .guard(isGameOverGuard)
         .payload(AdStatus.Cta)
-        .execute(setAdStatusCommand)
+        .execute(setAdStatusCommand);
+};
 
-        .guard(isCurrentLevelCompleteGuard)
-        .execute(switchToNextLevelCommand);
+export const winAnimationCompleteCommand = (): void => {
+    lego.command.guard(isCurrentLevelCompleteGuard).execute(switchToNextLevelCommand);
 };
 
 const setWordToSolvedCommand = (uuid: string): void => {
@@ -194,6 +195,6 @@ export const resizeCommand = (): void => {
 
 export const takeToStoreCommand = (): void => {
     console.warn('TAKE ME TO STORE');
-    
+
     window.installCTA && window.installCTA();
 };
