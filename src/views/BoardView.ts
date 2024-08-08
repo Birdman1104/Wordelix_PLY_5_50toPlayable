@@ -73,7 +73,7 @@ export class BoardView extends Container {
         this.wordsContainer = new WordsContainer();
         this.words = words.map((word, i) => {
             const wordView = new WordView(word);
-            wordView.y = i * 128 + 50;
+            wordView.y = i * 130 + 50;
             wordView.on('dragStart', (uuid) => this.onDragStart(uuid));
             this.wordsContainer.addChild(wordView);
             return wordView;

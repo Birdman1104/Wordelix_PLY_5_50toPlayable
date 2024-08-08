@@ -80,7 +80,7 @@ export class WordView extends Container {
         const line = makeSprite({ texture: Images['game/line'], anchor: new Point(1, 0.5) });
         const scaleX = 1400 / line.width - this.getWordLength() / line.width;
         line.scale.set(scaleX, 0.2);
-        line.position.set(1500, 50);
+        line.position.set(1500, 60);
         this.addChild(line);
 
         const startX = line.x - line.width;
@@ -125,7 +125,7 @@ export class WordView extends Container {
         this.dragStarted = false;
         if (!this.draggingLetter) return;
         this.draggingLetter.off('pointermove', this.onDragMove, this);
-
+        this.draggingLetter.hideOutline();
         const dropArea = this.findDropArea();
         if (dropArea) {
             const cb = (): void => {
