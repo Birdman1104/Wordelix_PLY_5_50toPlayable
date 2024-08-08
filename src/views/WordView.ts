@@ -121,7 +121,7 @@ export class WordView extends Container {
         line.scale.set(scaleX, 0.2);
         line.position.set(1500, 60);
         this.addChild(line);
-
+        
         const startX = line.x - line.width;
         this.setDropAreas(startX);
     }
@@ -133,15 +133,6 @@ export class WordView extends Container {
         letterView.on('pointerup', this.stopDrag, this);
         letterView.on('disableDrag', () => (this.canDrag = false));
         letterView.on('enableDrag', () => (this.canDrag = true));
-    }
-
-    private disableDragEvents(letterView: LetterView): void {
-        letterView.interactive = true;
-        letterView.off('pointerdown', (e) => this.onDragStart(e, letterView));
-        letterView.off('pointerout', this.stopDrag, this);
-        letterView.off('pointerup', this.stopDrag, this);
-        letterView.off('disableDrag', () => (this.canDrag = false));
-        letterView.off('enableDrag', () => (this.canDrag = true));
     }
 
     private onDragStart(event, letterView: LetterView): void {
@@ -167,11 +158,11 @@ export class WordView extends Container {
         if (!this.draggingLetter) return;
         lego.event.emit(WordViewEvents.DragComplete);
         this.draggingLetter.off('pointermove', this.onDragMove, this);
-        // this.draggingLetter.hideOutline();
+
         const dropArea = this.findDropArea();
-        console.warn('dropArea', dropArea);
-        
+
         if (dropArea) {
+            this.draggingLetter.emptyArea()
             if (!dropArea.isFree) {
                 this.handleCollisionFromLeft(dropArea);
                 this.handleCollisionFromRight(dropArea);
@@ -215,27 +206,19 @@ export class WordView extends Container {
         return currentW;
     }
 
-    private getWordLength(): number {
-        return this.config.letters.reduce((acc, letter) => acc + LETTER_SIZES[letter.letter].width, 0);
-    }
 
-    private isFilled(): boolean {
-        return this.finalPositions.every((area) => !area.isFree);
-    }
 
     private checkAnswer(): void {
         const answer = this.finalPositions.map((area) => area.insertedLetter).join('');
         if (answer === this.answer) {
             this.disableLettersDrag();
             lego.event.emit(WordViewEvents.Solved, this.uuid);
-        } else {
-            // console.warn('WRONG');
-        }
+        } 
     }
 
     private setDropAreas(startX = 0): void {
         let prevX = startX;
-        const width = 120
+        const width = 120;
         for (let i = 0; i < this.disabledLetters.length; i++) {
             const letter = this.disabledLetters[i];
             const startX = prevX;
@@ -261,14 +244,13 @@ export class WordView extends Container {
 
     private findDropArea(): DropDownAreaInfo | undefined {
         const { x } = this.draggingLetter as LetterView;
-        if(this.finalPositions.every((area) => area.isFree)) return this.finalPositions[0];
+
+        if (this.finalPositions.every((area) => area.isFree)) return this.finalPositions[0];
         let dropArea = this.finalPositions.find((area) => x >= area.startX && x <= area.endX);
-        // console.warn('dropArea with x', dropArea);
-        
+
         const lastArea = this.finalPositions[this.finalPositions.length - 1];
         if (!dropArea && x > lastArea.endX) {
             dropArea = lastArea;
-            // console.warn('dropArea last area', dropArea);
         }
 
         return dropArea;
@@ -322,8 +304,6 @@ export class WordView extends Container {
 
     private dropLetterToOriginalPosition(): void {
         if (!this.draggingLetter) return;
-        // @ts-ignore
-        // this.disabledLetters.filter((l) => (l.x === this.draggingLetter.x))
         anime({
             targets: this.draggingLetter,
             x: this.draggingLetter.originalX,
@@ -332,8 +312,16 @@ export class WordView extends Container {
             easing: 'easeInOutSine',
         });
 
-        if(!this.draggingLetter.area){
+        if (!this.draggingLetter.area) {
             this.draggingLetter.hideOutline();
         }
+    }
+
+    private getWordLength(): number {
+        return this.config.letters.reduce((acc, letter) => acc + LETTER_SIZES[letter.letter].width, 0);
+    }
+
+    private isFilled(): boolean {
+        return this.finalPositions.every((area) => !area.isFree);
     }
 }

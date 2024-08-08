@@ -44,7 +44,7 @@ export class LetterView extends Container {
             easing: 'easeInOutSine',
             direction: 'alternate',
             loop: 1,
-        })
+        });
         this.sprite.tint = 0x0ac950;
     }
 
@@ -68,9 +68,12 @@ export class LetterView extends Container {
     }
 
     public startDrag(): void {
+        this.showOutline();
+    }
+
+    public emptyArea(): void {
         this.dropArea?.empty();
         this.dropArea = null;
-        this.showOutline();
     }
 
     private build(): void {
@@ -101,7 +104,6 @@ export class LetterView extends Container {
                 break;
         }
 
-        
         this.outline && (this.outline.visible = false);
     }
 
