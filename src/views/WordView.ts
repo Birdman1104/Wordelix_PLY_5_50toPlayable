@@ -6,7 +6,7 @@ import { LETTER_SIZES } from '../configs/LettersSizeConfig';
 import { WordViewEvents } from '../events/MainEvents';
 import { LetterModel } from '../models/LetterModel';
 import { WordModel } from '../models/WordModel';
-import { makeSprite } from '../utils';
+import { callIfExists, makeSprite } from '../utils';
 import { DropDownAreaInfo } from './DropDownAreaInfo';
 import { LetterView } from './LetterView';
 
@@ -36,6 +36,10 @@ export class WordView extends Container {
 
     public rebuild(): void {
         //
+    }
+
+    public setSolved(): void {
+        this.draggableLetters.forEach((letter) => letter.setSolved());
     }
 
     public disableLettersDrag(): void {
@@ -124,9 +128,12 @@ export class WordView extends Container {
 
         const dropArea = this.findDropArea();
         if (dropArea) {
-            this.dropLetterToArea(dropArea, this.draggingLetter);
+            const cb = (): void => {
+                this.isFilled() && this.checkAnswer();
+            }
+            this.dropLetterToArea(dropArea, this.draggingLetter, cb);
             dropArea.setLetter(this.draggingLetter.letter, this.draggingLetter.uuid);
-            this.isFilled() && this.checkAnswer();
+
         } else {
             this.dropLetterToOriginalPosition();
         }
@@ -261,13 +268,14 @@ export class WordView extends Container {
         firstFreeArea.setLetter(collidedLetter.letter, collidedLetter.uuid);
     }
 
-    private dropLetterToArea(dropArea: DropDownAreaInfo, letter: LetterView): void {
+    private dropLetterToArea(dropArea: DropDownAreaInfo, letter: LetterView, cb?: () => void): void {
         anime({
             targets: letter,
             x: dropArea.centerX,
             y: dropArea.centerY,
             duration: 50,
             easing: 'easeInOutSine',
+            complete: () => callIfExists(cb),
         });
         letter.dropTo(dropArea);
     }

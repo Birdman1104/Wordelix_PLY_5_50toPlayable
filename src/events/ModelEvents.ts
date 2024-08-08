@@ -32,4 +32,4 @@ export const LevelModelEvents = {
 
 export const SoundModelEvents = { StateUpdate: 'SoundModelStateUpdate' };
 
-export const WordModelEvents = { LettersUpdate: 'WordModelLettersUpdate' };
+export const WordModelEvents = { LettersUpdate: 'WordModelLettersUpdate', SolvedUpdate: 'WordModelSolvedUpdate' };

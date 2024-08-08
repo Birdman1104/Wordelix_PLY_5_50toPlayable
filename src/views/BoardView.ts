@@ -1,6 +1,6 @@
 import { lego } from '@armathai/lego';
 import { Container, Rectangle, Text } from 'pixi.js';
-import { BoardModelEvents, GameModelEvents } from '../events/ModelEvents';
+import { BoardModelEvents, GameModelEvents, WordModelEvents } from '../events/ModelEvents';
 import { GameState } from '../models/GameModel';
 import { LevelModel } from '../models/LevelModel';
 import { WordModel } from '../models/WordModel';
@@ -18,7 +18,8 @@ export class BoardView extends Container {
 
         lego.event
             .on(GameModelEvents.StateUpdate, this.onGameStateUpdate, this)
-            .on(BoardModelEvents.LevelUpdate, this.onLevelUpdate, this);
+            .on(BoardModelEvents.LevelUpdate, this.onLevelUpdate, this)
+            .on(WordModelEvents.SolvedUpdate, this.onWordSolvedUpdate, this);
 
         this.build();
     }
@@ -29,6 +30,10 @@ export class BoardView extends Container {
 
     public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
         return new Rectangle(0, this.level === 1 ? 0 : -100, 1500, this.level === 1 ? 520 : 2000);
+    }
+
+    public getWordByUuid(uuid: string): WordView | undefined {
+        return this.words.find((word) => word.uuid === uuid);
     }
 
     public rebuild(): void {
@@ -84,6 +89,13 @@ export class BoardView extends Container {
             this.wordsContainer.addChild(word);
             word.position.set(word.x, word.y);
         }
+    }
+
+    private onWordSolvedUpdate(solved: boolean, wasSolved: boolean, uuid: string): void {
+        const word = this.getWordByUuid(uuid);
+        if (!word) return;
+
+        solved && word.setSolved();
     }
 
     private onGameStateUpdate(state: GameState): void {
