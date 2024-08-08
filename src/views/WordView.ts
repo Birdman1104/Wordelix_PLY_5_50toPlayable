@@ -17,6 +17,7 @@ export class WordView extends Container {
     private dragStarted = false;
     private canDrag = true;
     private _allowedToDrag = true;
+    private prevDragArea: DropDownAreaInfo | null = null;
 
     private draggingLetter: LetterView | null;
 
@@ -151,6 +152,7 @@ export class WordView extends Container {
         event.stopPropagation();
 
         this.draggingLetter = letterView;
+        this.prevDragArea = this.draggingLetter.area;
         this.draggingLetter.startDrag();
         this.dragPoint = event.data.getLocalPosition(letterView.parent);
         this.dragPoint.x -= letterView.x;
@@ -165,9 +167,15 @@ export class WordView extends Container {
         if (!this.draggingLetter) return;
         lego.event.emit(WordViewEvents.DragComplete);
         this.draggingLetter.off('pointermove', this.onDragMove, this);
-        this.draggingLetter.hideOutline();
+        // this.draggingLetter.hideOutline();
         const dropArea = this.findDropArea();
+        console.warn('dropArea', dropArea);
+        
         if (dropArea) {
+            if (!dropArea.isFree) {
+                this.handleCollisionFromLeft(dropArea);
+                this.handleCollisionFromRight(dropArea);
+            }
             const cb = (): void => {
                 this.isFilled() && this.checkAnswer();
             };
@@ -186,9 +194,6 @@ export class WordView extends Container {
         const newPoint = event.data.getLocalPosition(this.draggingLetter.parent);
         this.draggingLetter.x = newPoint.x - this.dragPoint.x;
         this.draggingLetter.y = newPoint.y - this.dragPoint.y;
-
-        this.handleCollisionFromLeft();
-        this.handleCollisionFromRight();
     }
 
     private buildLetter(letterConfig: LetterModel): LetterView {
@@ -230,10 +235,11 @@ export class WordView extends Container {
 
     private setDropAreas(startX = 0): void {
         let prevX = startX;
+        const width = 120
         for (let i = 0; i < this.disabledLetters.length; i++) {
             const letter = this.disabledLetters[i];
             const startX = prevX;
-            const endX = startX + LETTER_SIZES[letter.letter].width;
+            const endX = startX + width;
             const startY = letter.y - letter.height / 2;
             const endY = letter.y + letter.height / 2;
             const centerX = startX + (endX - startX) / 2;
@@ -254,21 +260,21 @@ export class WordView extends Container {
     }
 
     private findDropArea(): DropDownAreaInfo | undefined {
-        const { x, y } = this.draggingLetter as LetterView;
-        let dropArea = this.finalPositions.find((area) => x > area.startX && x < area.endX && area.isFree);
-
+        const { x } = this.draggingLetter as LetterView;
+        if(this.finalPositions.every((area) => area.isFree)) return this.finalPositions[0];
+        let dropArea = this.finalPositions.find((area) => x >= area.startX && x <= area.endX);
+        // console.warn('dropArea with x', dropArea);
+        
         const lastArea = this.finalPositions[this.finalPositions.length - 1];
-        if (!dropArea && x > lastArea.endX && lastArea.isFree) {
+        if (!dropArea && x > lastArea.endX) {
             dropArea = lastArea;
+            // console.warn('dropArea last area', dropArea);
         }
 
         return dropArea;
     }
 
-    private handleCollisionFromLeft(): void {
-        const { x } = this.draggingLetter as LetterView;
-        const dropArea = this.finalPositions.find((area) => x > area.startX && x <= area.centerX);
-        if (!dropArea || dropArea.isFree) return;
+    private handleCollisionFromLeft(dropArea: DropDownAreaInfo): void {
         const collidedLetter = this.draggableLetters.find((letter) => letter.uuid === dropArea.insertedLetterId);
         if (!collidedLetter) return;
 
@@ -285,10 +291,7 @@ export class WordView extends Container {
         firstFreeArea.setLetter(collidedLetter.letter, collidedLetter.uuid);
     }
 
-    private handleCollisionFromRight(): void {
-        const { x } = this.draggingLetter as LetterView;
-        const dropArea = this.finalPositions.find((area) => x > area.centerX && x <= area.endX);
-        if (!dropArea || dropArea.isFree) return;
+    private handleCollisionFromRight(dropArea: DropDownAreaInfo): void {
         const collidedLetter = this.draggableLetters.find((letter) => letter.uuid === dropArea.insertedLetterId);
         if (!collidedLetter) return;
 
@@ -319,6 +322,8 @@ export class WordView extends Container {
 
     private dropLetterToOriginalPosition(): void {
         if (!this.draggingLetter) return;
+        // @ts-ignore
+        // this.disabledLetters.filter((l) => (l.x === this.draggingLetter.x))
         anime({
             targets: this.draggingLetter,
             x: this.draggingLetter.originalX,
@@ -326,5 +331,9 @@ export class WordView extends Container {
             duration: 200,
             easing: 'easeInOutSine',
         });
+
+        if(!this.draggingLetter.area){
+            this.draggingLetter.hideOutline();
+        }
     }
 }
