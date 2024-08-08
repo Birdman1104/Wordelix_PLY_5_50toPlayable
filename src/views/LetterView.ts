@@ -1,3 +1,4 @@
+import anime from 'animejs';
 import { Container, Sprite } from 'pixi.js';
 import { Images } from '../assets';
 import { BoundsType, GAME_CONFIG } from '../configs/GameConfig';
@@ -35,6 +36,15 @@ export class LetterView extends Container {
     }
 
     public setSolved(): void {
+        anime({
+            targets: this.scale,
+            x: 1.2,
+            y: 1.2,
+            duration: 200,
+            easing: 'easeInOutSine',
+            direction: 'alternate',
+            loop: 1,
+        })
         this.sprite.tint = 0x0ac950;
     }
 
