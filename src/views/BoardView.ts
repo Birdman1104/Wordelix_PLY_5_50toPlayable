@@ -34,7 +34,7 @@ export class BoardView extends Container {
     }
 
     public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
-        return new Rectangle(0, this.level === 1 ? 0 : -100, 1500, this.level === 1 ? 520 : 2000);
+        return new Rectangle(0, this.level === 1 ? -100 : -100, 1500, this.level === 1 ? 820 : 2000);
     }
 
     public getWordByUuid(uuid: string): WordView | undefined {
