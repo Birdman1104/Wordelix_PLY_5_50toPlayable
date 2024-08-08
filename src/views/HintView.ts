@@ -2,22 +2,21 @@ import { lego } from '@armathai/lego';
 import anime from 'animejs';
 import { Container, Point, Sprite } from 'pixi.js';
 import { Images } from '../assets';
-import { GameModelEvents, HintModelEvents } from '../events/ModelEvents';
-import { GameState } from '../models/GameModel';
+import { HintModelEvents } from '../events/ModelEvents';
 import { getViewByProperty, makeSprite } from '../utils';
+import { DummyLetterView } from './DummyLetterView';
 
 export class HintView extends Container {
     private hand: Sprite;
     private hintPositions: Point[] = [];
     private currentPoint = 0;
-    private isTyping = false;
+    private letter: string;
+    private dummyLetter: DummyLetterView | null;
 
     constructor() {
         super();
 
-        lego.event
-            .on(HintModelEvents.VisibleUpdate, this.onHintVisibleUpdate, this)
-            .on(GameModelEvents.StateUpdate, this.onGameStateUpdate, this);
+        lego.event.on(HintModelEvents.VisibleUpdate, this.onHintVisibleUpdate, this);
 
         this.build();
         this.hide();
@@ -30,13 +29,8 @@ export class HintView extends Container {
     public destroy(): void {
         this.removeTweens();
         lego.event.off(HintModelEvents.VisibleUpdate, this.onHintVisibleUpdate, this);
-        lego.event.off(GameModelEvents.StateUpdate, this.onGameStateUpdate, this);
 
         super.destroy();
-    }
-
-    private onGameStateUpdate(state: GameState): void {
-        this.isTyping = state === GameState.Typing;
     }
 
     private onHintVisibleUpdate(visible: boolean): void {
@@ -65,7 +59,7 @@ export class HintView extends Container {
     private showFirstTime(): void {
         const point = this.hintPositions[this.currentPoint];
         this.hand.scale.set(0.8);
-        this.hand.alpha = 1;
+        this.hand.alpha = 0;
         this.hand.position.set(point.x, point.y);
         this.hand.angle = 0;
         this.hand.visible = true;
@@ -75,15 +69,30 @@ export class HintView extends Container {
 
     private pointHand(): void {
         anime({
+            targets: this.hand,
+            alpha: 1,
+            duration: 500,
+            easing: 'easeInOutCubic',
+        })
+        anime({
             targets: this.hand.scale,
             x: 0.6,
             y: 0.6,
             duration: 500,
             easing: 'easeInOutCubic',
-            direction: 'alternate',
             complete: () => {
                 this.currentPoint += 1;
-                this.currentPoint = this.hintPositions.length % this.currentPoint;
+                if (this.currentPoint >= this.hintPositions.length) {
+                    this.currentPoint = 0;
+                }
+                if (this.currentPoint === 1) {
+                    const bw = getViewByProperty('viewName', 'BoardView');
+                    this.dummyLetter = new DummyLetterView(this.letter);
+                    this.dummyLetter.scale.set(bw.scale.x, bw.scale.y);
+                    this.addChild(this.dummyLetter);
+                    this.removeChild(this.hand);
+                    this.addChild(this.hand);
+                }
                 this.moveHand(this.hintPositions[this.currentPoint]);
             },
         });
@@ -96,30 +105,56 @@ export class HintView extends Container {
             y: pos.y,
             duration: 500,
             easing: 'easeInOutCubic',
-            complete: () => this.pointHand(),
+            complete: () => this.scaleUp(),
+            update: () => {
+                if (this.dummyLetter) {
+                    this.dummyLetter.position.set(this.hand.x, this.hand.y);
+                }
+            },
+        });
+    }
+
+    private scaleUp(): void {
+        anime({
+            targets: this.hand.scale,
+            x: 0.8,
+            y: 0.8,
+            duration: 500,
+            easing: 'easeInOutCubic',
+        });
+        anime({
+            targets: [this.hand, this.dummyLetter],
+            alpha: 0,
+            duration: 500,
+            easing: 'easeInOutCubic',
+            complete: () => {
+                this.currentPoint++
+                if (this.currentPoint >= this.hintPositions.length) {
+                    this.currentPoint = 0;
+                }
+                const point = this.hintPositions[this.currentPoint];
+                this.hand.scale.set(0.8);
+                this.hand.alpha = 0;
+                this.hand.position.set(point.x, point.y);
+                this.pointHand()
+            }
         });
     }
 
     private removeTweens(): void {
         anime.remove(this.hand);
         anime.remove(this.hand.scale);
+        anime.remove(this.dummyLetter);
+        this.dummyLetter && this.dummyLetter.destroy();
     }
 
     private getHintPosition(): Point[] {
-        return [new Point(0, 0)];
-    }
+        const bw = getViewByProperty('viewName', 'BoardView');
+        const wordView = bw.getFirstWord();
+        if (!wordView) return [new Point(0, 0)];
+        const { positions, letter } = wordView.getHintPositions();
 
-    private getCardHintPositions() {
-        const board = getViewByProperty('viewName', 'BoardView');
-        const boardPos = board.getHintPosition();
-        const pos = this.toLocal(boardPos);
-        return [pos];
-    }
-
-    private getKeyHintPositions() {
-        const keyboardView = getViewByProperty('viewName', 'KeyboardView');
-        const keyPos = keyboardView.getHintPosition();
-        const pos = this.toLocal(keyPos);
-        return [pos];
+        this.letter = letter;
+        return positions;
     }
 }

@@ -1,41 +1,15 @@
 import { Container, Sprite } from 'pixi.js';
 import { Images } from '../assets';
 import { BoundsType, GAME_CONFIG } from '../configs/GameConfig';
-import { LetterModel } from '../models/LetterModel';
 import { makeSprite } from '../utils';
-import { DropDownAreaInfo } from './DropDownAreaInfo';
 
-export class LetterView extends Container {
-    public originalX: number;
-    public originalY: number;
+export class DummyLetterView extends Container {
     private sprite: Sprite;
     private outline: Sprite | undefined;
-    private dropArea: DropDownAreaInfo | null = null;
 
-    constructor(private config: LetterModel) {
+    constructor(public letter: string) {
         super();
         this.build();
-    }
-
-    get uuid(): string {
-        return this.config.uuid;
-    }
-
-    get letter(): string {
-        return this.config.letter;
-    }
-
-    get area(): DropDownAreaInfo | null {
-        return this.dropArea;
-    }
-
-    public setOriginalPosition(x: number, y: number): void {
-        this.originalX = x;
-        this.originalY = y;
-    }
-
-    public setSolved(): void {
-        this.sprite.tint = 0x0ac950;
     }
 
     public showOutline(): void {
@@ -50,26 +24,13 @@ export class LetterView extends Container {
         }
     }
 
-    public dropTo(dropArea: DropDownAreaInfo): void {
-        this.dropArea = dropArea;
-        this.dropArea.setLetter(this.config.letter, this.config.uuid);
-        this.originalX = dropArea.centerX;
-        this.originalY = dropArea.centerY;
-    }
-
-    public startDrag(): void {
-        this.dropArea?.empty();
-        this.dropArea = null;
-        this.showOutline();
-    }
-
     private build(): void {
         this.buildLetter();
         this.buildOutline();
     }
 
     private buildLetter(): void {
-        this.sprite = makeSprite({ texture: Images[`game/${this.config.letter}`] });
+        this.sprite = makeSprite({ texture: Images[`game/${this.letter}`] });
         this.sprite.interactive = true;
         this.sprite.tint = 0x000000;
         this.addChild(this.sprite);
@@ -90,9 +51,6 @@ export class LetterView extends Container {
             default:
                 break;
         }
-
-        
-        this.outline && (this.outline.visible = false);
     }
 
     private buildSquareOutline(): void {

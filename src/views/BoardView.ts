@@ -18,6 +18,7 @@ export class BoardView extends Container {
 
         lego.event
             .on(GameModelEvents.StateUpdate, this.onGameStateUpdate, this)
+            .on(GameModelEvents.IsTutorialUpdate, this.onGameTutorialUpdate, this)
             .on(BoardModelEvents.LevelUpdate, this.onLevelUpdate, this)
             .on(WordModelEvents.SolvedUpdate, this.onWordSolvedUpdate, this);
 
@@ -26,6 +27,10 @@ export class BoardView extends Container {
 
     get viewName() {
         return 'BoardView';
+    }
+
+    public getFirstWord(): WordView | undefined {
+        return this.words[0];
     }
 
     public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
@@ -96,6 +101,14 @@ export class BoardView extends Container {
         if (!word) return;
 
         solved && word.setSolved();
+    }
+
+    private onGameTutorialUpdate(newValue: boolean, oldValue: boolean): void {
+        if (newValue) {
+            this.words.forEach((word, i) => {
+                i !== 0 && word.disableLettersDrag();
+            });
+        }
     }
 
     private onGameStateUpdate(state: GameState): void {

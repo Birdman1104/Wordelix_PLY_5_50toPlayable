@@ -15,6 +15,8 @@ export const BoardEvents = {
 
 export const WordViewEvents = {
     Solved: 'WordViewEventsSolved',
+    DragStart: 'WordViewEventsDragStart',
+    DragComplete: 'WordViewEventsDragComplete',
 }
 
 export const TakeMe = {

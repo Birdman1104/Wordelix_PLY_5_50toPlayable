@@ -53,9 +53,9 @@ export class GameModel extends ObservableModel {
 
     public initialize(): void {
         this._state = GameState.Idle;
-        this._isTutorial = true;
         this._board = new BoardModel();
         this._board.initialize();
+        this._isTutorial = true;
     }
 
     public destroy(): void {

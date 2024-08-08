@@ -3,6 +3,8 @@ import { MainGameEvents, TakeMe, WordViewEvents } from '../events/MainEvents';
 import { AdModelEvents, GameModelEvents } from '../events/ModelEvents';
 import {
     onAdStatusUpdateCommand,
+    onDragCompleteCommand,
+    onDragStartCommand,
     onGameStateUpdateCommand,
     onMainViewReadyCommand,
     onWordSolvedCommand,
@@ -38,6 +40,14 @@ const eventCommandPairs = Object.freeze([
     {
         event: WordViewEvents.Solved,
         command: onWordSolvedCommand,
+    },
+    {
+        event: WordViewEvents.DragStart,
+        command: onDragStartCommand,
+    },
+    {
+        event: WordViewEvents.DragComplete,
+        command: onDragCompleteCommand,
     },
     {
         event: MainGameEvents.Resize,

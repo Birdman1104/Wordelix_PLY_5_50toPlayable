@@ -10,7 +10,7 @@ import {
     hintModelGuard,
     hintParamGuard,
     isCurrentLevelCompleteGuard,
-    soundParamGuard
+    soundParamGuard,
 } from './Guards';
 
 export const initAdModelCommand = (): void => Head.initializeADModel();
@@ -28,7 +28,6 @@ const initializeGameModelCommand = (): void => Head.initializeGameModel();
 const initializeCtaModelCommand = (): void => Head.ad?.initializeCtaModel();
 const initializeSoundModelCommand = (): void => Head.ad?.initializeSoundModel();
 const initializeHintModelCommand = (): void => Head.ad?.initializeHintModel();
-
 
 const setHintStateCommand = (state: HintState): void => Head.ad?.hint?.setState(state);
 const startHintVisibilityTimerCommand = (time?: number): void => Head.ad?.hint?.startVisibilityTimer(time);
@@ -117,17 +116,25 @@ const turnOffTutorialModeCommand = (): void => Head.gameModel?.turnOffTutorialMo
 
 export const onWordSolvedCommand = (uuid: string): void => {
     lego.command
-    .payload(uuid).execute(setWordToSolvedCommand)
-    .guard(isCurrentLevelCompleteGuard).execute(switchToNextLevelCommand);
-}
+        .payload(uuid)
+        .execute(setWordToSolvedCommand)
+
+        .execute(turnOffTutorialModeCommand)
+
+        .guard(hintModelGuard)
+        .execute(destroyHintModelCommand)
+
+        .guard(isCurrentLevelCompleteGuard)
+        .execute(switchToNextLevelCommand);
+};
 
 const setWordToSolvedCommand = (uuid: string): void => {
     Head.gameModel?.board?.getWordModelByUuid(uuid)?.setSolved();
-}
+};
 
 const switchToNextLevelCommand = (): void => {
     Head.gameModel?.board?.switchToNextLevel();
-}
+};
 
 export const onGameStateUpdateCommand = (state: GameState): void => {
     switch (state) {
@@ -140,7 +147,24 @@ export const onGameStateUpdateCommand = (state: GameState): void => {
     }
 };
 
-export const resizeCommand = (): void => {
+export const onDragStartCommand = (): void => {
+    lego.command
+        //
+        .guard(hintModelGuard)
+        .execute(hideHintCommand)
+
+        .guard(hintModelGuard)
+        .execute(stopHintVisibilityTimerCommand);
+};
+
+export const onDragCompleteCommand = (): void => {
+    lego.command
+        //
+        .guard(hintModelGuard)
+        .execute(startHintVisibilityTimerCommand);
+};
+
+export const restartHintCommand = (): void => {
     lego.command
         //
         .guard(hintModelGuard)
@@ -151,6 +175,10 @@ export const resizeCommand = (): void => {
 
         .guard(hintModelGuard)
         .execute(startHintVisibilityTimerCommand);
+};
+
+export const resizeCommand = (): void => {
+    lego.command.execute(restartHintCommand);
 };
 
 export const takeToStoreCommand = (): void => {
