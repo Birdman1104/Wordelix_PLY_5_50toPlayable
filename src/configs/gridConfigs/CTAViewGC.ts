@@ -9,7 +9,7 @@ const getCTAGridLandscapeConfig = () => {
     const bounds = { x: 0, y: 0, width: document.body.clientWidth, height: document.body.clientHeight };
     return {
         name: 'mainCell',
-        debug: { color: 0xff5027 },
+        // debug: { color: 0xff5027 },
         bounds,
         cells: [
             {
@@ -37,7 +37,7 @@ const getCTAGridPortraitConfig = () => {
     const bounds = { x: 0, y: 0, width: document.body.clientWidth, height: document.body.clientHeight };
     return {
         name: 'mainCell',
-        debug: { color: 0xff5027 },
+        // debug: { color: 0xff5027 },
         bounds,
         cells: [
             {
