@@ -5,7 +5,7 @@ export enum BoundsType {
 }
 
 export const GAME_CONFIG = Object.freeze({
-    HintOnIdle: 3, // Seconds
+    HintOnIdle: 1, // Seconds
     Hint: true,
     Sound: true,
 
