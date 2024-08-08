@@ -51,6 +51,8 @@ export class DummyLetterView extends Container {
             default:
                 break;
         }
+
+        this.outline && (this.outline.tint = 0x000000);
     }
 
     private buildSquareOutline(): void {

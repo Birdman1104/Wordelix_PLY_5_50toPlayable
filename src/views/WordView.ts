@@ -173,7 +173,7 @@ export class WordView extends Container {
         if (!this.draggingLetter) return;
         lego.event.emit(WordViewEvents.DragComplete);
         this.draggingLetter.off('pointermove', this.onDragMove, this);
-
+        this.draggingLetter.stopDrag();
         const dropArea = this.findDropArea();
 
         if (dropArea) {

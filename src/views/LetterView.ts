@@ -46,6 +46,7 @@ export class LetterView extends Container {
             loop: 1,
         });
         this.sprite.tint = 0x0ac950;
+        this.outline && (this.outline.tint = 0x0ac950);
     }
 
     public showOutline(): void {
@@ -68,7 +69,14 @@ export class LetterView extends Container {
     }
 
     public startDrag(): void {
+        this.sprite.tint = 0x565656;
+        this.outline && (this.outline.tint = 0x565656);
         this.showOutline();
+    }
+
+    public stopDrag(): void {
+        this.sprite.tint = 0x000000;
+        this.outline && (this.outline.tint = 0x000000);
     }
 
     public emptyArea(): void {
@@ -104,7 +112,9 @@ export class LetterView extends Container {
                 break;
         }
 
+        this.outline && (this.outline.tint = 0x000000);
         this.outline && (this.outline.visible = false);
+        
     }
 
     private buildSquareOutline(): void {
