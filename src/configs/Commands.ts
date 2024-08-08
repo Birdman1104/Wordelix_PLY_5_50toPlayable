@@ -101,7 +101,7 @@ export const onAdStatusUpdateCommand = (status: AdStatus): void => {
             // lego.command.guard(gameModelGuard).execute(destroyGameModelCommand);
             lego.command
                 //
-                .execute(takeToStoreCommand)
+                // .execute(takeToStoreCommand)
                 .execute(showCtaCommand);
 
             break;

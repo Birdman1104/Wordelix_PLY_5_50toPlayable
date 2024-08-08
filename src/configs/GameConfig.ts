@@ -5,14 +5,14 @@ export enum BoundsType {
 }
 
 export const GAME_CONFIG = Object.freeze({
-    HintOnIdle: 15, // Seconds
-    Hint: false,
+    HintOnIdle: 3, // Seconds
+    Hint: true,
     Sound: true,
 
     // Параметры для разных версий
     // 1word
-    wordsFromSecondLevel: 1,
-    bounds: BoundsType.LINE,
+    // wordsFromSecondLevel: 1,
+    // bounds: BoundsType.NONE,
     
     // 2word
     // wordsFromSecondLevel: 2,
@@ -43,8 +43,8 @@ export const GAME_CONFIG = Object.freeze({
     // bounds: BoundsType.SQUARE,
     
     // square_3word
-    // wordsFromSecondLevel: 3,
-    // bounds: BoundsType.SQUARE,
+    wordsFromSecondLevel: 3,
+    bounds: BoundsType.SQUARE,
 
 });
 
