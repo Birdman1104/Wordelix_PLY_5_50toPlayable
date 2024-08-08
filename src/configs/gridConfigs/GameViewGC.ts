@@ -1,3 +1,4 @@
+import { CellScale } from '@armathai/pixi-grid';
 import { lp } from '../../utils';
 
 export const getGameViewGridConfig = () => {
@@ -13,7 +14,8 @@ const getGameViewGridLandscapeConfig = () => {
         cells: [
             {
                 name: 'board',
-                bounds: { x: 0.025, y: 0.05, width: 0.95, height: 0.9 },
+                scale: CellScale.fit,
+                bounds: { x: 0.025, y: 0.1, width: 0.95, height: 0.8 },
             },
         ],
     };
@@ -29,7 +31,8 @@ const getGameViewGridPortraitConfig = () => {
         cells: [
             {
                 name: 'board',
-                bounds: { x: 0.05, y: 0, width: 0.9, height: 1 },
+                scale: CellScale.fit,
+                bounds: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
             },
         ],
     };

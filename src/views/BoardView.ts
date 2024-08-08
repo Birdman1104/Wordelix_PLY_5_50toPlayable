@@ -11,7 +11,7 @@ export class BoardView extends Container {
     private title: Text;
     private words: WordView[] = [];
     private wordsContainer: WordsContainer;
-    private level: number = 1;
+    private level: number = 2;
 
     constructor() {
         super();
@@ -34,7 +34,7 @@ export class BoardView extends Container {
     }
 
     public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
-        return new Rectangle(0, this.level === 1 ? -100 : -100, 1500, this.level === 1 ? 820 : 2000);
+        return new Rectangle(0, this.level === 1 ? -150 : 0, 1500, this.level === 1 ? 820 : 2000);
     }
 
     public getWordByUuid(uuid: string): WordView | undefined {
@@ -59,14 +59,14 @@ export class BoardView extends Container {
     private buildTitle(title: string): void {
         const fontSize = this.level === 1 ? 106 : 148;
         if (this.title) {
-            this.title.style.fontSize = fontSize;
-            this.title.text = title;
-        } else {
-            this.title = new Text(title, { fill: 0x000000, fontSize, stroke: 0x000000, strokeThickness: 1 });
-            this.title.anchor.set(0.5);
-            this.title.position.set(750, -150);
-            this.wordsContainer.addChild(this.title);
+            this.title.destroy();
+            // this.title = null;
         }
+
+        this.title = new Text(title, { fill: 0x000000, fontSize, stroke: 0x000000, strokeThickness: 1 });
+        this.title.anchor.set(0.5);
+        this.title.position.set(750, -150);
+        this.wordsContainer.addChild(this.title);
     }
 
     private buildWords(words: WordModel[], level: number): void {
@@ -107,6 +107,10 @@ export class BoardView extends Container {
         if (newValue) {
             this.words.forEach((word, i) => {
                 i !== 0 && word.disableLettersDrag();
+            });
+        } else {
+            this.words.forEach((word, i) => {
+                i !== 0 && word.enableLettersDrag();
             });
         }
     }
