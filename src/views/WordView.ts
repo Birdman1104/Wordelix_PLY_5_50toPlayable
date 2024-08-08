@@ -54,9 +54,16 @@ export class WordView extends Container {
             };
         }
         const index = this.finalPositions.indexOf(freeArea);
-        const letters = this.draggableLetters.filter((letter) => letter.letter === freeArea.answer)
         
-        const letter = this.isFilled() ? letters[0] : letters.find((letter) => !letter.area);  
+        let letter;
+        if(this.isFilled()) {
+            const letters = this.draggableLetters.filter((letter) => letter.letter === freeArea.answer)
+            letter = letters[0]
+        } else {
+            const f = this.draggableLetters.filter((letter) => letter.letter === freeArea.answer)
+            const l = f.find((letter) => letter.area !== freeArea && !letter.area);
+            letter = f.length === 1 ? f[0] : l;   
+        }
         
         if (!letter) {
             return {
@@ -124,6 +131,11 @@ export class WordView extends Container {
         line.scale.set(scaleX, 0.2);
         line.position.set(1500, 60);
         this.addChild(line);
+
+        line.interactive = true;
+        line.on('pointerdown', () => {
+            console.warn(this.finalPositions.map((area) => area.insertedLetter));
+        });
         
         const startX = line.x - line.width;
         this.setDropAreas(startX);
