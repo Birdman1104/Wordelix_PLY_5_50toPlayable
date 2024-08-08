@@ -136,6 +136,12 @@ export class HintView extends Container {
                 this.hand.scale.set(0.8);
                 this.hand.alpha = 0;
                 this.hand.position.set(point.x, point.y);
+                if(this.dummyLetter) {
+                    this.removeChild(this.dummyLetter);
+                    this.dummyLetter.destroy()
+                    this.dummyLetter = null;
+                };
+
                 this.pointHand()
             }
         });
@@ -145,7 +151,11 @@ export class HintView extends Container {
         anime.remove(this.hand);
         anime.remove(this.hand.scale);
         anime.remove(this.dummyLetter);
-        this.dummyLetter && this.dummyLetter.destroy();
+        if(this.dummyLetter) {
+            this.removeChild(this.dummyLetter);
+            this.dummyLetter.destroy()
+            this.dummyLetter = null;
+        };
     }
 
     private getHintPosition(): Point[] {
