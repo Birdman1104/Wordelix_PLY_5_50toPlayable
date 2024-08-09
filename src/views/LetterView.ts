@@ -61,7 +61,10 @@ export class LetterView extends Container {
     public hideOutline(): void {
         if (this.outline) {
             this.outline.visible = false;
+            this.outline.tint = 0x000000
         }
+
+        this.sprite.tint = 0x000000;
     }
 
     public dropTo(dropArea: DropDownAreaInfo): void {
@@ -78,8 +81,8 @@ export class LetterView extends Container {
     }
 
     public stopDrag(): void {
-        this.sprite.tint = 0x000000;
-        this.outline && (this.outline.tint = 0x000000);
+        this.sprite.tint = 0x565656;
+        this.outline && (this.outline.tint = 0x565656);
     }
 
     public emptyArea(): void {

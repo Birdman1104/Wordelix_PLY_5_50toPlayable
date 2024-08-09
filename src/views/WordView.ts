@@ -164,7 +164,7 @@ export class WordView extends Container {
         this.draggingLetter.startDrag();
         this.dragPoint = event.data.getLocalPosition(letterView.parent);
         this.dragPoint.x -= letterView.x;
-        this.dragPoint.y -= letterView.y;
+        this.dragPoint.y -= letterView.y - 20;
         this.removeChild(this.draggingLetter);
         this.addChild(this.draggingLetter);
         letterView.on('pointermove', this.onDragMove, this);
