@@ -30,6 +30,11 @@ export class LetterView extends Container {
         return this.dropArea;
     }
 
+    public setDisabledTint(): void {
+        this.sprite.tint = 0x565656;
+        this.outline && (this.outline.tint = 0x565656);
+    }
+
     public setOriginalPosition(x: number, y: number): void {
         this.originalX = x;
         this.originalY = y;
@@ -61,7 +66,7 @@ export class LetterView extends Container {
     public hideOutline(): void {
         if (this.outline) {
             this.outline.visible = false;
-            this.outline.tint = 0x000000
+            this.outline.tint = 0x000000;
         }
 
         this.sprite.tint = 0x000000;
@@ -75,14 +80,14 @@ export class LetterView extends Container {
     }
 
     public startDrag(): void {
-        this.sprite.tint = 0x565656;
-        this.outline && (this.outline.tint = 0x565656);
+        // this.sprite.tint = 0x565656;
+        // this.outline && (this.outline.tint = 0x565656);
         this.showOutline();
     }
 
     public stopDrag(): void {
-        this.sprite.tint = 0x565656;
-        this.outline && (this.outline.tint = 0x565656);
+        // this.sprite.tint = 0x565656;
+        // this.outline && (this.outline.tint = 0x565656);
     }
 
     public emptyArea(): void {

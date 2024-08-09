@@ -116,6 +116,7 @@ export class WordView extends Container {
         let currentW = 0;
         this.disabledLetters = this.config.letters.map((letter, i) => {
             const letterView = this.buildLetter(letter);
+            letterView.setDisabledTint()
             currentW = this.setLetterInitialPosition(letterView, currentW);
             return letterView;
         });
