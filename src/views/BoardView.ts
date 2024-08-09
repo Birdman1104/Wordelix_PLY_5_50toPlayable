@@ -1,5 +1,5 @@
 import { lego } from '@armathai/lego';
-import { Container, Rectangle, Text } from 'pixi.js';
+import { Container, Graphics, Rectangle, Text } from 'pixi.js';
 import { BoardModelEvents, GameModelEvents, WordModelEvents } from '../events/ModelEvents';
 import { GameState } from '../models/GameModel';
 import { LevelModel } from '../models/LevelModel';
@@ -12,7 +12,7 @@ export class BoardView extends Container {
     private words: WordView[] = [];
     private wordsContainer: WordsContainer;
     private level: number = 2;
-    // private bnds: Graphics;
+    private bnds: Graphics;
 
     constructor() {
         super();
@@ -35,7 +35,7 @@ export class BoardView extends Container {
     }
 
     public getBounds(skipUpdate?: boolean | undefined, rect?: PIXI.Rectangle | undefined): Rectangle {
-        return new Rectangle(0, -220, 1500, this.level === 1 ? 820 : 1800);
+        return new Rectangle(0, -220, this.level === 1 ? 1250 : 1450, this.level === 1 ? 820 : 1900);
     }
 
     public getWordByUuid(uuid: string): WordView | undefined {
@@ -62,7 +62,7 @@ export class BoardView extends Container {
     }
 
     private buildTitle(title: string): void {
-        const fontSize = this.level === 1 ? 106 : 148;
+        const fontSize = this.level === 1 ? 92 : 148;
         if (this.title) {
             this.title.destroy();
             // this.title = null;
@@ -70,7 +70,7 @@ export class BoardView extends Container {
 
         this.title = new Text(title, { fill: 0x000000, fontSize, stroke: 0x000000, strokeThickness: 1 });
         this.title.anchor.set(0.5);
-        this.title.position.set(750, -150);
+        this.title.position.set(this.level === 1 ? 625 : 725, -150);
         this.wordsContainer.addChild(this.title);
     }
 
@@ -82,8 +82,8 @@ export class BoardView extends Container {
         }
         this.wordsContainer = new WordsContainer();
         this.words = words.map((word, i) => {
-            const wordView = new WordView(word);
-            wordView.y = i * 130 + 50;
+            const wordView = new WordView(word, this.level);
+            wordView.y = i * 150 + 50;
             wordView.on('dragStart', (uuid) => this.onDragStart(uuid));
             this.wordsContainer.addChild(wordView);
             return wordView;

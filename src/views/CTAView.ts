@@ -42,7 +42,7 @@ export class CTAView extends PixiGrid {
             this.buildPackShot();
         } else {
             this.blocker.interactive = true;
-            this.blocker.alpha = 0.5;
+            // this.blocker.alpha = 0.5;
             this.blocker.on('pointerdown', () => {
                 lego.event.emit(TakeMe.ToStore);
             });

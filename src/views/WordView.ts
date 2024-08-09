@@ -23,7 +23,7 @@ export class WordView extends Container {
 
     private finalPositions: DropDownAreaInfo[] = [];
 
-    constructor(private config: WordModel) {
+    constructor(private config: WordModel, private level: number) {
         super();
         this.build();
     }
@@ -134,9 +134,9 @@ export class WordView extends Container {
 
     private buildLine(): void {
         const line = makeSprite({ texture: Images['game/line'], anchor: new Point(1, 0.5) });
-        const scaleX = 1400 / line.width - this.getWordLength() / line.width;
+        const scaleX = (this.level === 1 ? 1100 : 1300) / line.width - this.getWordLength() / line.width;
         line.scale.set(scaleX, 0.2);
-        line.position.set(1500, 60);
+        line.position.set((this.level === 1 ? 1200 : 1400), 60);
         this.addChild(line);
 
         const startX = line.x - line.width;
@@ -148,6 +148,7 @@ export class WordView extends Container {
         letterView.on('pointerdown', (e) => this.onDragStart(e, letterView));
         letterView.on('pointerout', this.stopDrag, this);
         letterView.on('pointerup', this.stopDrag, this);
+        letterView.on('pointerupoutside', this.stopDrag, this);
         letterView.on('disableDrag', () => (this.canDrag = false));
         letterView.on('enableDrag', () => (this.canDrag = true));
     }
@@ -164,7 +165,7 @@ export class WordView extends Container {
         this.draggingLetter.startDrag();
         this.dragPoint = event.data.getLocalPosition(letterView.parent);
         this.dragPoint.x -= letterView.x;
-        this.dragPoint.y -= letterView.y - 20;
+        this.dragPoint.y -= letterView.y - 40;
         this.removeChild(this.draggingLetter);
         this.addChild(this.draggingLetter);
         letterView.on('pointermove', this.onDragMove, this);

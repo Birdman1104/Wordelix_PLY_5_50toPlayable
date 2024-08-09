@@ -88,6 +88,7 @@ export class HintView extends Container {
                 if (this.currentPoint === 1) {
                     const bw = getViewByProperty('viewName', 'BoardView');
                     this.dummyLetter = new DummyLetterView(this.letter);
+                    this.dummyLetter.position.set(-300, -300)
                     this.dummyLetter.scale.set(bw.scale.x, bw.scale.y);
                     this.addChild(this.dummyLetter);
                     this.removeChild(this.hand);
