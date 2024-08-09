@@ -139,11 +139,6 @@ export class WordView extends Container {
         line.position.set(1500, 60);
         this.addChild(line);
 
-        line.interactive = true;
-        line.on('pointerdown', () => {
-            console.warn(this.finalPositions.map((area) => area.insertedLetter));
-        });
-
         const startX = line.x - line.width;
         this.setDropAreas(startX);
     }
